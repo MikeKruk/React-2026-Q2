@@ -1,9 +1,19 @@
-function App() {
-  return (
-    <>
-      <h1 className="text-red-500">First component</h1>
-    </>
-  );
-}
+import { Component } from 'react';
 
-export default App;
+import Footer from './layout/Footer';
+import Header from './layout/Header';
+
+export default class App extends Component {
+  render() {
+    return (
+      <div className="min-h-screen px-4 bg-background flex flex-col">
+        <Header />
+        <main className='flex-1'>
+          <section>search</section>
+          <section>result</section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+}
