@@ -1,5 +1,6 @@
 import { Component } from 'react';
 
+
 import { api } from './features/search/api/api';
 import CardList from './features/search/components/CardList';
 import SearchSection from './features/search/components/SearchSection';
@@ -7,18 +8,21 @@ import Footer from './layout/Footer';
 import Header from './layout/Header';
 import { LOCAL_STORAGE_KEY } from './shared/constants/constants';
 import type { Pokemon, PokemonListItem } from './shared/types/types';
+import { Loader } from 'lucide-react';
 
 interface State {
   pokemons: Pokemon[];
   currentTerm: string;
-  inputValue: string;
+  inputValue: string | null;
+  isLoading: boolean;
 }
 
 export default class App extends Component<object, State> {
   state: State = {
     pokemons: [],
     currentTerm: null,
-    inputValue: localStorage.getItem(LOCAL_STORAGE_KEY) || '',
+    inputValue: localStorage.getItem(LOCAL_STORAGE_KEY) ?? '',
+    isLoading: false,
   };
   async componentDidMount(): Promise<void> {
     await this.fetchPokemons(this.state.inputValue);
@@ -26,22 +30,30 @@ export default class App extends Component<object, State> {
 
   fetchPokemons = async (term: string) => {
     if (term === this.state.currentTerm) return;
-    if (term === '') {
-      const { results }: { results: PokemonListItem[] } =
-        await api.getPokemonList();
-      const pokemons: Pokemon[] = await Promise.all(
-        results.map((pokemon) => api.getPokemonByName(pokemon.name))
-      );
-      this.setState({
-        pokemons,
-        currentTerm: term,
-      });
-    } else {
-      const pokemon = await api.getPokemonByName(term);
-      this.setState({
-        pokemons: [pokemon],
-        currentTerm: term,
-      });
+    this.setState({ isLoading: true });
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      if (term === '') {
+        const { results }: { results: PokemonListItem[] } =
+          await api.getPokemonList();
+        const pokemons: Pokemon[] = await Promise.all(
+          results.map((pokemon) => api.getPokemonByName(pokemon.name))
+        );
+        this.setState({
+          pokemons,
+          currentTerm: term,
+        });
+      } else {
+        const pokemon = await api.getPokemonByName(term);
+        this.setState({
+          pokemons: [pokemon],
+          currentTerm: term,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.setState({ isLoading: false });
     }
   };
 
@@ -55,6 +67,7 @@ export default class App extends Component<object, State> {
     this.setState({ inputValue: value });
   };
   render() {
+    const { isLoading, inputValue, pokemons } = this.state;
     return (
       <div className="min-h-screen px-4 bg-background flex flex-col">
         <Header />
@@ -62,9 +75,15 @@ export default class App extends Component<object, State> {
           <SearchSection
             onSearch={this.handelSearch}
             onChange={this.handelInputChange}
-            value={this.state.inputValue}
+            value={inputValue}
           />
-          <CardList pokemons={this.state.pokemons} />
+          {isLoading ? (
+            <div className="flex-1 flex justify-center items-center">
+              <Loader className="animate-spin" />
+            </div>
+          ) : (
+            <CardList pokemons={pokemons} />
+          )}
         </main>
         <Footer />
       </div>
