@@ -28,14 +28,13 @@ export default class App extends Component<object, State> {
     error: null,
   };
   async componentDidMount(): Promise<void> {
-    await this.fetchPokemons(this.state.inputValue);
+    await this.fetchPokemons(this.state.inputValue.trim());
   }
 
   fetchPokemons = async (term: string) => {
-    const normalizedTerm = term.trim();
     this.setState({ isLoading: true, error: null });
     try {
-      if (normalizedTerm === '') {
+      if (term === '') {
         const { results }: { results: PokemonListItem[] } =
           await api.getPokemonList();
         const pokemons: Pokemon[] = await Promise.all(
@@ -46,10 +45,10 @@ export default class App extends Component<object, State> {
           lastSearchTerm: '',
         });
       } else {
-        const pokemon = await api.getPokemonByName(normalizedTerm);
+        const pokemon = await api.getPokemonByName(term);
         this.setState({
           pokemons: [pokemon],
-          lastSearchTerm: normalizedTerm,
+          lastSearchTerm: term,
         });
       }
     } catch (error: unknown) {
