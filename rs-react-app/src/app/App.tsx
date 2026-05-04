@@ -13,7 +13,7 @@ import type { Pokemon, PokemonListItem } from '../shared/types/types';
 
 interface State {
   pokemons: Pokemon[];
-  currentTerm: string | null;
+  lastSearchTerm: string | null;
   inputValue: string;
   isLoading: boolean;
   error: string | null;
@@ -22,7 +22,7 @@ interface State {
 export default class App extends Component<object, State> {
   state: State = {
     pokemons: [],
-    currentTerm: null,
+    lastSearchTerm: null,
     inputValue: localStorage.getItem(LOCAL_STORAGE_KEY) ?? '',
     isLoading: false,
     error: null,
@@ -33,8 +33,6 @@ export default class App extends Component<object, State> {
 
   fetchPokemons = async (term: string) => {
     const normalizedTerm = term.trim();
-
-    if (normalizedTerm === this.state.currentTerm) return;
     this.setState({ isLoading: true, error: null });
     try {
       if (normalizedTerm === '') {
@@ -45,18 +43,19 @@ export default class App extends Component<object, State> {
         );
         this.setState({
           pokemons,
-          currentTerm: '',
+          lastSearchTerm: '',
         });
       } else {
         const pokemon = await api.getPokemonByName(normalizedTerm);
         this.setState({
           pokemons: [pokemon],
-          currentTerm: normalizedTerm,
+          lastSearchTerm: normalizedTerm,
         });
       }
     } catch (error: unknown) {
       this.setState({
         error: error instanceof Error ? error.message : 'Something went wrong',
+        lastSearchTerm: null,
       });
     } finally {
       this.setState({ isLoading: false });
@@ -65,6 +64,9 @@ export default class App extends Component<object, State> {
 
   handleSearch = () => {
     const term = this.state.inputValue.trim();
+
+    if (term === this.state.lastSearchTerm) return;
+
     localStorage.setItem(LOCAL_STORAGE_KEY, term);
     this.fetchPokemons(term);
   };
