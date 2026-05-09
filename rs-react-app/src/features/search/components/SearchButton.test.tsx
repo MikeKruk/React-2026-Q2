@@ -18,12 +18,12 @@ describe('SearchButton', () => {
   });
 
   test('calls onClick when button is clicked', async () => {
-    const handelClick = vi.fn();
-    render(<SearchButton onClick={handelClick} />);
+    const handleClick = vi.fn();
+    render(<SearchButton onClick={handleClick} />);
 
     const button = screen.getByRole('button');
     await userEvent.click(button);
 
-    expect(handelClick).toHaveBeenCalledTimes(1);
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });
