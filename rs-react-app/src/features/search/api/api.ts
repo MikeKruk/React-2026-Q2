@@ -18,14 +18,6 @@ class Api {
 
     return response.json();
   }
-
-  async getPokemonDescription(name: string): Promise<string> {
-    const response = await fetch(`${BASE_URL_API}/pokemon-species/${name}`);
-    if (!response.ok)
-      throw new Error(`Failed to get pokemon description ${name}`);
-
-    return response.json();
-  }
 }
 
 export const api = new Api();

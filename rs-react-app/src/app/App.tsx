@@ -40,15 +40,15 @@ export default class App extends Component<object, State> {
         const pokemons: Pokemon[] = await Promise.all(
           results.map((pokemon) => api.getPokemonByName(pokemon.name))
         );
+        console.log(pokemons);
+
         this.setState({
           pokemons,
           lastSearchTerm: '',
         });
       } else {
         const pokemon = await api.getPokemonByName(term);
-        const description = await api.getPokemonDescription(term);
-        console.log(description);
-        
+
         this.setState({
           pokemons: [pokemon],
           lastSearchTerm: term,

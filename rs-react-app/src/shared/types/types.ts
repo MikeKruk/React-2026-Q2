@@ -14,7 +14,6 @@ export interface PokemonType {
 export interface Pokemon {
   id: number;
   name: string;
-  description: string;
   types: PokemonType[];
   sprites: {
     other: {
