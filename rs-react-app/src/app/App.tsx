@@ -40,7 +40,6 @@ export default class App extends Component<object, State> {
         const pokemons: Pokemon[] = await Promise.all(
           results.map((pokemon) => api.getPokemonByName(pokemon.name))
         );
-        console.log(results);
 
         this.setState({
           pokemons,
@@ -91,7 +90,7 @@ export default class App extends Component<object, State> {
             <SearchErrorState message={error} onRetry={this.handleSearch} />
           ) : isLoading ? (
             <div className="flex-1 flex justify-center items-center">
-              <Loader className="animate-spin" />
+              <Loader className="animate-spin" aria-label='Loading'/>
             </div>
           ) : (
             <CardList pokemons={pokemons} />
