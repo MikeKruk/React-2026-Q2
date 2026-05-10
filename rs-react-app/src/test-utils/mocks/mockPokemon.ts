@@ -1,4 +1,4 @@
-export const mockPokemon = {
+const mockPokemon = {
   id: 1,
   name: 'bulbasaur',
   types: [
@@ -27,7 +27,7 @@ export const mockPokemon = {
   },
 };
 
-export const mockPokemon2 = {
+const mockPokemon2 = {
   id: 4,
   name: 'charmander',
   types: [
@@ -47,4 +47,20 @@ export const mockPokemon2 = {
       },
     },
   },
+};
+
+const mockItemPokemonsList1 = {
+  name: 'bulbasaur',
+  url: 'https://pokeapi.co/api/v2/pokemon/1/',
+};
+const mockItemPokemonsList2 = {
+  name: 'ivysaur',
+  url: 'https://pokeapi.co/api/v2/pokemon/2/',
+};
+
+export {
+  mockItemPokemonsList1,
+  mockItemPokemonsList2,
+  mockPokemon,
+  mockPokemon2,
 };

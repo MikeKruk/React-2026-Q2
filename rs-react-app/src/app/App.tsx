@@ -40,7 +40,7 @@ export default class App extends Component<object, State> {
         const pokemons: Pokemon[] = await Promise.all(
           results.map((pokemon) => api.getPokemonByName(pokemon.name))
         );
-        console.log(pokemons);
+        console.log(results);
 
         this.setState({
           pokemons,
