@@ -9,13 +9,12 @@ import Header from '../layout/Header';
 import ErrorTestButton from '../shared/components/ErrorTestButton';
 import { LOCAL_STORAGE_KEY } from '../shared/constants/constants';
 import type { Pokemon, PokemonListItem } from '../shared/types/types';
+import { useLocalStorage } from '../shared/hooks/useLocalStorage';
 
 export default function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState<string>(
-    () => localStorage.getItem(LOCAL_STORAGE_KEY) ?? ''
-  );
+  const [inputValue, setInputValue] = useLocalStorage(LOCAL_STORAGE_KEY, '');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,8 +56,6 @@ export default function App() {
     const term = inputValue.trim();
 
     if (term === lastSearchTerm) return;
-
-    localStorage.setItem(LOCAL_STORAGE_KEY, term);
     await fetchPokemons(term);
   };
 
