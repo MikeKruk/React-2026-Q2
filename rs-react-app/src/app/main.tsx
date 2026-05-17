@@ -1,14 +1,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import ErrorBoundary from '../shared/components/ErrorBoundary.tsx';
 
-import App from './App.tsx';
+import { RouterProvider } from '@tanstack/react-router';
 import './index.css';
+import { router } from './router.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    <RouterProvider router={router} />
   </StrictMode>
 );

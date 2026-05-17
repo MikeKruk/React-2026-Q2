@@ -65,7 +65,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen px-4 bg-background flex flex-col">
-      <Header />
       <main className="flex-1 my-4 flex flex-col gap-8">
         <SearchSection
           onSearch={handleSearch}
@@ -85,7 +84,6 @@ export default function App() {
           <ErrorTestButton />
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
