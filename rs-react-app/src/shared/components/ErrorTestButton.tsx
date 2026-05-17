@@ -1,29 +1,21 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
-interface State {
-  crash: boolean;
-}
+export default function ErrorTestButton() {
+  const [crash, setCrash] = useState(false);
 
-export default class ErrorTestButton extends Component {
-  state: State = {
-    crash: false,
-  };
+  if (crash) throw new Error('Test error');
 
-  handelClick = () => {
-    this.setState({ crash: true });
+  const handelClick = () => {
+    setCrash(true);
   }
-  render() {
-    const { crash } = this.state;
-    if (crash) throw new Error('Test error');
-    return (
-      <button
-        className="    
-        w-full max-w-1/3 md:max-w-35 p-0.5 rounded-md
-        border border-gray-500"
-        onClick={this.handelClick}
-      >
-        Throw error
-      </button>
-    );
-  }
+  return (
+    <button
+      className="    
+    w-full max-w-1/3 md:max-w-35 p-0.5 rounded-md
+    border border-gray-500"
+      onClick={handelClick}
+    >
+      Throw error
+    </button>
+  );
 }

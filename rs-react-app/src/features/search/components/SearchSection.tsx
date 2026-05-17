@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import SearchButton from './SearchButton';
 import SearchInput from './SearchInput';
 
@@ -8,14 +7,15 @@ interface SearchSectionProps {
   onChange: (value: string) => void;
 }
 
-export default class SearchSection extends Component<SearchSectionProps> {
-  render() {
-    const { value, onSearch, onChange } = this.props;
-    return (
-      <section className="flex md:justify-center gap-8">
-        <SearchInput value={value} onChange={onChange} />
-        <SearchButton onClick={onSearch} />
-      </section>
-    );
-  }
+export default function SearchSection({
+  value,
+  onSearch,
+  onChange,
+}: SearchSectionProps) {
+  return (
+    <section className="flex md:justify-center gap-8">
+      <SearchInput value={value} onChange={onChange} />
+      <SearchButton onClick={onSearch} />
+    </section>
+  );
 }
