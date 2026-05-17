@@ -4,7 +4,7 @@ import type { Pokemon, PokemonListItem } from '../../../shared/types/types';
 async function getPokemonList(
   limit = MAX_LIMIT,
   offset = 0
-): Promise<{ results: PokemonListItem[] }> {
+): Promise<{ results: PokemonListItem[], count: number }> {
   const response = await fetch(
     `${BASE_URL_API}/pokemon?limit=${limit}&offset=${offset}`
   );
