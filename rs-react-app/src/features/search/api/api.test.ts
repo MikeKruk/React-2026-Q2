@@ -30,11 +30,11 @@ describe('API', () => {
     });
   });
 
-  describe('getPokemonByName', () => {
+  describe('getPokemon', () => {
     test('return correct pokemon on success', async () => {
       mockFetch(mockPokemon);
 
-      const result = await api.getPokemonByName(mockItemPokemonsList1.name);
+      const result = await api.getPokemon(mockItemPokemonsList1.name);
 
       expect(result.name).toBe(mockPokemon.name);
     });
@@ -43,7 +43,7 @@ describe('API', () => {
       mockFetchError();
       const name = mockItemPokemonsList1.name;
 
-      await expect(api.getPokemonByName(name)).rejects.toThrow(`Failed to get pokemon ${name}`);
+      await expect(api.getPokemon(name)).rejects.toThrow(`Failed to get pokemon ${name}`);
     });
   });
 });

@@ -1,11 +1,12 @@
 import { createRoot } from 'react-dom/client';
 
 import { RouterProvider } from '@tanstack/react-router';
+import { StrictMode } from 'react';
 import './index.css';
 import { router } from './router';
 
 createRoot(document.getElementById('root')!).render(
-  // <StrictMode>
-  // </StrictMode>
-  <RouterProvider router={router} />
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>
 );

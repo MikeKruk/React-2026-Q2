@@ -15,7 +15,7 @@ vi.mock('../features/search/api/api', () => {
   return {
     api: {
       getPokemonList: vi.fn(),
-      getPokemonByName: vi.fn(),
+      getPokemon: vi.fn(),
     },
   };
 });
@@ -32,7 +32,7 @@ describe('App', () => {
     vi.mocked(api.getPokemonList).mockResolvedValue({
       results: [{ ...mockItemPokemonsList1 }, { ...mockItemPokemonsList2 }],
     });
-    vi.mocked(api.getPokemonByName)
+    vi.mocked(api.getPokemon)
       .mockResolvedValueOnce(mockPokemon)
       .mockResolvedValueOnce(mockPokemon2);
   });
@@ -67,12 +67,12 @@ describe('App', () => {
   });
 
   test('fetches pokemon by name when localStorage has saved term', async () => {
-    vi.mocked(api.getPokemonByName).mockResolvedValue(mockPokemon);
+    vi.mocked(api.getPokemon).mockResolvedValue(mockPokemon);
     storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
     render(<App />);
 
     await waitFor(() => {
-      expect(api.getPokemonByName).toHaveBeenCalledWith('bulbasaur');
+      expect(api.getPokemon).toHaveBeenCalledWith('bulbasaur');
     });
   });
 
@@ -102,7 +102,7 @@ describe('App', () => {
     await userEvent.click(searchButton);
 
     await waitFor(() => {
-      expect(api.getPokemonByName).toHaveBeenCalledWith('bulbasaur');
+      expect(api.getPokemon).toHaveBeenCalledWith('bulbasaur');
     });
   });
 
@@ -115,7 +115,7 @@ describe('App', () => {
       expect(api.getPokemonList).toHaveBeenCalled();
     });
 
-    vi.mocked(api.getPokemonByName).mockResolvedValue(mockPokemon);
+    vi.mocked(api.getPokemon).mockResolvedValue(mockPokemon);
 
     await userEvent.type(input, 'bulbasaur');
     await userEvent.click(searchButton);
@@ -130,16 +130,16 @@ describe('App', () => {
 
   test('dosent fetch again when search term is the same', async () => {
     storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
-    vi.mocked(api.getPokemonByName).mockResolvedValue(mockPokemon);
+    vi.mocked(api.getPokemon).mockResolvedValue(mockPokemon);
     render(<App />);
     const searchButton = screen.getByRole('button', { name: 'Search' });
     await waitFor(() => {
-      expect(api.getPokemonByName).toHaveBeenCalled();
+      expect(api.getPokemon).toHaveBeenCalled();
     });
 
     await userEvent.click(searchButton);
 
-    expect(api.getPokemonByName).toHaveBeenCalledTimes(1);
+    expect(api.getPokemon).toHaveBeenCalledTimes(1);
   });
 
   test('shows fallback error message when is error is not an Error instance ', async () => {

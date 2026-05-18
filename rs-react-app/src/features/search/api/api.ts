@@ -13,11 +13,11 @@ async function getPokemonList(
   return response.json();
 }
 
-async function getPokemonByName(name: string): Promise<Pokemon> {
-  const response = await fetch(`${BASE_URL_API}/pokemon/${name}`);
-  if (!response.ok) throw new Error(`Failed to get pokemon ${name}`);
+async function getPokemon(param: string | number): Promise<Pokemon> {
+  const response = await fetch(`${BASE_URL_API}/pokemon/${param}`);
+  if (!response.ok) throw new Error(`Failed to get pokemon ${param}`);
 
   return response.json();
 }
 
-export { getPokemonByName, getPokemonList };
+export { getPokemon, getPokemonList };

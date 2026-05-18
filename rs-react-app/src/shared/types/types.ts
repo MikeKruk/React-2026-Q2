@@ -14,6 +14,9 @@ export interface PokemonType {
 export interface Pokemon {
   id: number;
   name: string;
+  height: number;
+  weight: number;
+  base_experience: number;
   types: PokemonType[];
   sprites: {
     other: {

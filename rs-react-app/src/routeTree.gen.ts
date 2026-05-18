@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './app/routes/__root'
 import { Route as NotFoundRouteImport } from './app/routes/notFound'
+import { Route as DetailRouteImport } from './app/routes/detail'
 import { Route as AboutRouteImport } from './app/routes/about'
 import { Route as IndexRouteImport } from './app/routes/index'
 
 const NotFoundRoute = NotFoundRouteImport.update({
   id: '/notFound',
   path: '/notFound',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DetailRoute = DetailRouteImport.update({
+  id: '/detail',
+  path: '/detail',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -32,30 +38,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/detail': typeof DetailRoute
   '/notFound': typeof NotFoundRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/detail': typeof DetailRoute
   '/notFound': typeof NotFoundRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/detail': typeof DetailRoute
   '/notFound': typeof NotFoundRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/notFound'
+  fullPaths: '/' | '/about' | '/detail' | '/notFound'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/notFound'
-  id: '__root__' | '/' | '/about' | '/notFound'
+  to: '/' | '/about' | '/detail' | '/notFound'
+  id: '__root__' | '/' | '/about' | '/detail' | '/notFound'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  DetailRoute: typeof DetailRoute
   NotFoundRoute: typeof NotFoundRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/notFound'
       fullPath: '/notFound'
       preLoaderRoute: typeof NotFoundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/detail': {
+      id: '/detail'
+      path: '/detail'
+      fullPath: '/detail'
+      preLoaderRoute: typeof DetailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  DetailRoute: DetailRoute,
   NotFoundRoute: NotFoundRoute,
 }
 export const routeTree = rootRouteImport

@@ -4,11 +4,8 @@ import { Route as rootRoute } from './__root';
 
 export const Route = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      page: Number(search.page ?? 1),
-    };
-  },
+  path: '$page',
   component: App,
+  parseParams: ({ page }) => ({ page: Number(page) }),
+  stringifyParams: ({ page }) => ({ page: String(page) }),
 });

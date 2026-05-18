@@ -1,8 +1,7 @@
-import { useNavigate } from '@tanstack/react-router';
+import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
 import { Loader } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { Route as indexRoute } from '../app/routes/index';
-import { getPokemonByName, getPokemonList } from '../features/search/api/api';
+import { getPokemon, getPokemonList } from '../features/search/api/api';
 import CardList from '../features/search/components/CardList';
 import Pagination from '../features/search/components/Pagination';
 import SearchErrorState from '../features/search/components/SearchErrorState';
@@ -11,6 +10,7 @@ import ErrorTestButton from '../shared/components/ErrorTestButton';
 import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../shared/constants/constants';
 import { useLocalStorage } from '../shared/hooks/useLocalStorage';
 import type { Pokemon, PokemonListItem } from '../shared/types/types';
+import { Route as indexRoute } from './routes/index';
 
 export default function App() {
   const isFirstRender = useRef(true);
@@ -20,7 +20,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
-  const { page: currentPage } = indexRoute.useSearch();
+  const { page: currentPage } = indexRoute.useParams();
+  const { detailsId } = useParams({ strict: false });
   const navigate = useNavigate();
   const totalPages = Math.ceil(totalCount / MAX_LIMIT);
 
@@ -29,10 +30,10 @@ export default function App() {
       await fetchPokemons(inputValue.trim(), currentPage);
     }
 
-    if(isFirstRender.current) {
+    if (isFirstRender.current) {
       isFirstRender.current = false;
       fetch();
-      return
+      return;
     }
 
     if (inputValue.trim() !== '') return;
@@ -54,13 +55,13 @@ export default function App() {
         );
         setTotalCount(count);
         const pokemons: Pokemon[] = await Promise.all(
-          results.map((pokemon) => getPokemonByName(pokemon.name))
+          results.map((pokemon) => getPokemon(pokemon.name))
         );
 
         setPokemons(pokemons);
         setLastSearchTerm('');
       } else {
-        const pokemon = await getPokemonByName(term);
+        const pokemon = await getPokemon(term);
 
         setPokemons([pokemon]);
         setLastSearchTerm(term);
@@ -79,21 +80,28 @@ export default function App() {
 
     if (term === lastSearchTerm) return;
     navigate({
-      to: '/',
-      search: { page: 1 },
+      to: '/$page',
+      params: { page: 1 },
     });
     await fetchPokemons(term, 1);
   };
 
   const handlePageChange = (newPage: number) => {
     navigate({
-      to: '/',
-      search: { page: newPage },
+      to: '/$page',
+      params: { page: newPage },
     });
   };
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
+  };
+
+  const handelCardClick = (id: number) => {
+    navigate({
+      to: '/$page/$detailsId',
+      params: { page: currentPage, detailsId: id },
+    });
   };
 
   return (
@@ -103,26 +111,37 @@ export default function App() {
         onChange={handleInputChange}
         value={inputValue}
       />
-      {error ? (
-        <SearchErrorState message={error} onRetry={handleSearch} />
-      ) : isLoading ? (
-        <div className="flex-1 flex justify-center items-center">
-          <Loader className="animate-spin" aria-label="Loading" />
+      <div className="flex gap-4 items-start">
+        <div className={detailsId ? 'w-1/2 md:flex-1' : 'w-full'}>
+          {error ? (
+            <SearchErrorState message={error} onRetry={handleSearch} />
+          ) : isLoading ? (
+            <div className="flex-1 flex justify-center items-center">
+              <Loader className="animate-spin" aria-label="Loading" />
+            </div>
+          ) : (
+            <CardList
+              pokemons={pokemons}
+              onClick={handelCardClick}
+              isDetailOpen={!!detailsId}
+            />
+          )}
+          {!error && !isLoading && totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
-      ) : (
-        <CardList pokemons={pokemons} />
-      )}
-      <div className="flex flex-col gap-4">
-        {!error && !isLoading && totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+        {detailsId && (
+          <div className="w-1/2 md:w-1/3 sticky top-4">
+            <Outlet />
+          </div>
         )}
-        <div className="flex justify-end">
-          <ErrorTestButton />
-        </div>
+      </div>
+      <div className="flex justify-end">
+        <ErrorTestButton />
       </div>
     </main>
   );
