@@ -2,6 +2,7 @@ import { createRootRoute, Outlet, redirect } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import Footer from '../../layout/Footer';
 import Header from '../../layout/Header';
+import notFoundPage from '../../pages/notFoundPage';
 import ErrorBoundary from '../../shared/components/ErrorBoundary';
 
 function RootComponent() {
@@ -23,5 +24,6 @@ export const Route = createRootRoute({
       throw redirect({ to: '/$page', params: { page: 1 } });
     }
   },
+  notFoundComponent: notFoundPage,
   component: RootComponent,
 });
