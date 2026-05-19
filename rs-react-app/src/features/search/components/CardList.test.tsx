@@ -8,8 +8,10 @@ import CardList from './CardList';
 const arrPokemons = [mockPokemon, mockPokemon2];
 
 describe('CardList', () => {
+  const onClick = vi.fn();
+  const isDetailOpen = false;
   test('renders correct number of cards', () => {
-    render(<CardList pokemons={arrPokemons} />);
+    render(<CardList pokemons={arrPokemons} onClick={onClick} isDetailOpen={isDetailOpen} />);
 
     const imgs = screen.getAllByRole('img');
 
@@ -17,7 +19,7 @@ describe('CardList', () => {
   });
 
   test('renders description of pokemon', () => {
-    render(<CardList pokemons={arrPokemons} />);
+    render(<CardList pokemons={arrPokemons} onClick={onClick} isDetailOpen={isDetailOpen} />);
 
     const name1 = screen.getByText('bulbasaur');
     const name2 = screen.getByText('charmander');
@@ -33,7 +35,7 @@ describe('CardList', () => {
   });
 
   test('render nothing when pokemons array is empty', () => {
-    render(<CardList pokemons={[]} />);
+    render(<CardList pokemons={[]} onClick={onClick} isDetailOpen={isDetailOpen} />);
 
     const imgs = screen.queryAllByRole('img');
     expect(imgs).toHaveLength(0);
