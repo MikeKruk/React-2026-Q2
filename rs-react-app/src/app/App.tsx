@@ -126,13 +126,6 @@ export default function App() {
               isDetailOpen={!!detailsId}
             />
           )}
-          {!error && !isLoading && totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          )}
         </div>
         {detailsId && (
           <div className="w-1/2 md:w-1/3 sticky top-4">
@@ -140,6 +133,13 @@ export default function App() {
           </div>
         )}
       </div>
+      {!error && !isLoading && totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
       <div className="flex justify-end">
         <ErrorTestButton />
       </div>
