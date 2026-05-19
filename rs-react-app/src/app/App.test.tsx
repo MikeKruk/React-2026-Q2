@@ -1,6 +1,14 @@
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Outlet,
+  RouterProvider,
+} from '@tanstack/react-router';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { api } from '../features/search/api/api';
+
 import { LOCAL_STORAGE_KEY } from '../shared/constants/constants';
 import { mockLocalStorage } from '../test-utils/mocks/mockLocalStorage';
 import {
@@ -10,15 +18,36 @@ import {
   mockPokemon2,
 } from '../test-utils/mocks/mockPokemon';
 import App from './App';
+import { getPokemon, getPokemonList } from '../features/search/api/api';
 
 vi.mock('../features/search/api/api', () => {
   return {
-    api: {
-      getPokemonList: vi.fn(),
-      getPokemon: vi.fn(),
-    },
+    getPokemonList: vi.fn(),
+    getPokemon: vi.fn(),
   };
 });
+
+function renderApp() {
+  const rootRoute = createRootRoute({
+    component: () => <Outlet />,
+    notFoundComponent: () => <div>Not found</div>,
+  });
+
+  const indexRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '$page',
+    component: App,
+    parseParams: ({ page }) => ({ page: Number(page) }),
+    stringifyParams: ({ page }) => ({ page: String(page) }),
+  });
+
+  const router = createRouter({
+    routeTree: rootRoute.addChildren([indexRoute]),
+    history: createMemoryHistory({ initialEntries: ['/1'] }),
+  });
+
+  return render(<RouterProvider router={router} />);
+}
 
 describe('App', () => {
   let storage: ReturnType<typeof mockLocalStorage>;
@@ -29,10 +58,11 @@ describe('App', () => {
       writable: true,
     });
 
-    vi.mocked(api.getPokemonList).mockResolvedValue({
+    vi.mocked(getPokemonList).mockResolvedValue({
       results: [{ ...mockItemPokemonsList1 }, { ...mockItemPokemonsList2 }],
+      count: 2,
     });
-    vi.mocked(api.getPokemon)
+    vi.mocked(getPokemon)
       .mockResolvedValueOnce(mockPokemon)
       .mockResolvedValueOnce(mockPokemon2);
   });
@@ -42,7 +72,7 @@ describe('App', () => {
   });
 
   test('reads search term from localStorage on mount', async () => {
-    render(<App />);
+    renderApp();
 
     await waitFor(() => {
       expect(storage.getItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY);
@@ -50,37 +80,39 @@ describe('App', () => {
   });
 
   test('fetches pokemons list on mount when localStorage is empty', async () => {
-    render(<App />);
+    renderApp();
 
     await waitFor(() => {
-      expect(api.getPokemonList).toHaveBeenCalled();
+      expect(getPokemonList).toHaveBeenCalled();
     });
   });
 
   test('shows loading indicator while fetching', async () => {
-    vi.mocked(api.getPokemonList).mockReturnValue(new Promise(() => {}));
-    render(<App />);
-
-    const loader = screen.getByLabelText('Loading');
-
-    expect(loader).toBeInTheDocument();
-  });
-
-  test('fetches pokemon by name when localStorage has saved term', async () => {
-    vi.mocked(api.getPokemon).mockResolvedValue(mockPokemon);
-    storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
-    render(<App />);
+    vi.mocked(getPokemonList).mockReturnValue(new Promise(() => {}));
+    renderApp();
 
     await waitFor(() => {
-      expect(api.getPokemon).toHaveBeenCalledWith('bulbasaur');
+      const loader = screen.getByLabelText('Loading');
+
+      expect(loader).toBeInTheDocument();
     });
   });
 
-  test('shows error state when API fails', async () => {
-    vi.mocked(api.getPokemonList).mockRejectedValue(
+  test('fetches pokemon by name when localStorage has saved term', async () => {
+    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
+    storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
+    renderApp();
+
+    await waitFor(() => {
+      expect(getPokemon).toHaveBeenCalledWith('bulbasaur');
+    });
+  });
+
+  test('shows error state when fails', async () => {
+    vi.mocked(getPokemonList).mockRejectedValue(
       new Error('Failed to get pokemon list')
     );
-    render(<App />);
+    renderApp();
 
     await waitFor(() => {
       expect(
@@ -90,32 +122,32 @@ describe('App', () => {
   });
 
   test('searches pokemon when search button is clicked', async () => {
-    render(<App />);
-    const searchButton = screen.getByRole('button', { name: 'Search' });
-    const input = screen.getByLabelText('Search field');
+    renderApp();
+    const searchButton = await screen.findByRole('button', { name: 'Search' });
+    const input = await screen.findByLabelText('Search field');
 
     await waitFor(() => {
-      expect(api.getPokemonList).toHaveBeenCalled();
+      expect(getPokemonList).toHaveBeenCalled();
     });
 
     await userEvent.type(input, 'bulbasaur');
     await userEvent.click(searchButton);
 
     await waitFor(() => {
-      expect(api.getPokemon).toHaveBeenCalledWith('bulbasaur');
+      expect(getPokemon).toHaveBeenCalledWith('bulbasaur');
     });
   });
 
   test('save search term to localStorage when search button is clicked', async () => {
-    render(<App />);
-    const searchButton = screen.getByRole('button', { name: 'Search' });
-    const input = screen.getByLabelText('Search field');
+    renderApp();
+    const searchButton = await screen.findByRole('button', { name: 'Search' });
+    const input = await screen.findByLabelText('Search field');
 
     await waitFor(() => {
-      expect(api.getPokemonList).toHaveBeenCalled();
+      expect(getPokemonList).toHaveBeenCalled();
     });
 
-    vi.mocked(api.getPokemon).mockResolvedValue(mockPokemon);
+    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
 
     await userEvent.type(input, 'bulbasaur');
     await userEvent.click(searchButton);
@@ -130,21 +162,21 @@ describe('App', () => {
 
   test('dosent fetch again when search term is the same', async () => {
     storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
-    vi.mocked(api.getPokemon).mockResolvedValue(mockPokemon);
-    render(<App />);
-    const searchButton = screen.getByRole('button', { name: 'Search' });
+    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
+    renderApp();
+    const searchButton = await screen.findByRole('button', { name: 'Search' });
     await waitFor(() => {
-      expect(api.getPokemon).toHaveBeenCalled();
+      expect(getPokemon).toHaveBeenCalled();
     });
 
     await userEvent.click(searchButton);
 
-    expect(api.getPokemon).toHaveBeenCalledTimes(1);
+    expect(getPokemon).toHaveBeenCalledTimes(1);
   });
 
   test('shows fallback error message when is error is not an Error instance ', async () => {
-    vi.mocked(api.getPokemonList).mockRejectedValue('error');
-    render(<App />);
+    vi.mocked(getPokemonList).mockRejectedValue('error');
+    renderApp();
 
     await waitFor(() => {
       expect(screen.getByText('Something went wrong')).toBeInTheDocument();

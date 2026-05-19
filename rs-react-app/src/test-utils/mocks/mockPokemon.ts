@@ -1,6 +1,9 @@
 const mockPokemon = {
   id: 1,
   name: 'bulbasaur',
+  height: 7,
+  weight: 10,
+  base_experience: 64,
   types: [
     {
       slot: 1,
@@ -30,6 +33,9 @@ const mockPokemon = {
 const mockPokemon2 = {
   id: 4,
   name: 'charmander',
+  height: 7,
+  weight: 10,
+  base_experience: 64,
   types: [
     {
       slot: 1,

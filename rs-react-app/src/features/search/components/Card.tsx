@@ -9,7 +9,7 @@ export default function Card({ pokemon, onClick }: CardProps) {
   return (
     <div
       onClick={() => onClick(pokemon.id)}
-      className="border border-gray-500 rounded-md p-4 flex flex-col items-center flex gap-1"
+      className="border border-gray-500 rounded-md p-4 flex-col items-center flex gap-1"
     >
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}

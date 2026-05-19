@@ -4,7 +4,7 @@ import {
   mockItemPokemonsList2,
   mockPokemon,
 } from '../../../test-utils/mocks/mockPokemon';
-import { api } from './api';
+import { getPokemon, getPokemonList } from './api';
 
 describe('API', () => {
   afterEach(() => {
@@ -17,7 +17,7 @@ describe('API', () => {
         results: [{ ...mockItemPokemonsList1 }, { ...mockItemPokemonsList2 }],
       });
 
-      const result = await api.getPokemonList();
+      const result = await getPokemonList();
 
       expect(result.results[0].name).toBe('bulbasaur');
       expect(result.results[1].name).toBe('ivysaur');
@@ -26,7 +26,9 @@ describe('API', () => {
     test('throws error on failure', async () => {
       mockFetchError();
 
-      await expect(api.getPokemonList()).rejects.toThrow('Failed to get pokemon list');
+      await expect(getPokemonList()).rejects.toThrow(
+        'Failed to get pokemon list'
+      );
     });
   });
 
@@ -34,7 +36,7 @@ describe('API', () => {
     test('return correct pokemon on success', async () => {
       mockFetch(mockPokemon);
 
-      const result = await api.getPokemon(mockItemPokemonsList1.name);
+      const result = await getPokemon(mockItemPokemonsList1.name);
 
       expect(result.name).toBe(mockPokemon.name);
     });
@@ -43,7 +45,9 @@ describe('API', () => {
       mockFetchError();
       const name = mockItemPokemonsList1.name;
 
-      await expect(api.getPokemon(name)).rejects.toThrow(`Failed to get pokemon ${name}`);
+      await expect(getPokemon(name)).rejects.toThrow(
+        `Failed to get pokemon ${name}`
+      );
     });
   });
 });

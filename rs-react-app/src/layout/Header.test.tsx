@@ -1,20 +1,40 @@
-import { render, screen } from '@testing-library/react';
+import {
+  createRootRoute,
+  createRouter,
+  RouterProvider,
+} from '@tanstack/react-router';
+import { render, screen, waitFor } from '@testing-library/react';
 import Header from './Header';
 
-describe('Header', () => {
-  test('renders header title', () => {
-    render(<Header />);
-
-    const title = screen.getByRole('heading', { level: 1 });
-
-    expect(title).toBeInTheDocument();
+function renderHeader() {
+  const rootRoute = createRootRoute({
+    component: () => <Header />,
+  });
+  const router = createRouter({
+    routeTree: rootRoute,
   });
 
-  test('renders correct title text', () => {
-    render(<Header />);
+  return render(<RouterProvider router={router} />);
+}
 
-    const title = screen.getByRole('heading', { level: 1 });
+describe('Header', () => {
+  test('renders header title', async () => {
+    renderHeader();
 
-    expect(title).toHaveTextContent('Pokémon Explorer');
+    await waitFor(async () => {
+      const title = screen.getByRole('heading', { level: 1 });
+
+      expect(title).toBeInTheDocument();
+    });
+  });
+
+  test('renders correct title text', async () => {
+    renderHeader();
+
+    await waitFor(() => {
+      const title = screen.getByRole('heading', { level: 1 });
+
+      expect(title).toHaveTextContent('Pokémon Explorer');
+    });
   });
 });
