@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import PaginationButton from '../../../shared/components/PaginationButton';
+import PaginationButton from '../../../shared/ui/PaginationButton';
 import { getPaginationRage } from '../../../shared/utils/getPaginationRage';
 
 interface PaginationProps {

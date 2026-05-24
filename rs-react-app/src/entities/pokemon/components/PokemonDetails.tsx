@@ -2,8 +2,8 @@ import { useNavigate } from '@tanstack/react-router';
 import { Loader, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Route as detailsRoute } from '../../../app/routes/detail';
-import type { Pokemon } from '../../../shared/types/types';
 import { getPokemon } from '../api/api';
+import type { Pokemon } from '../types/types';
 
 export default function PokemonDetails() {
   const { page, detailsId } = detailsRoute.useParams();

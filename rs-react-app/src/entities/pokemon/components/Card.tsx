@@ -1,4 +1,4 @@
-import type { Pokemon } from '../../../shared/types/types';
+import type { Pokemon } from '../types/types';
 
 interface CardProps {
   pokemon: Pokemon;

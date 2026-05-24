@@ -9,16 +9,12 @@ import {
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { LOCAL_STORAGE_KEY } from '../shared/constants/constants';
-import { mockLocalStorage } from '../test-utils/mocks/mockLocalStorage';
-import {
-  mockItemPokemonsList1,
-  mockItemPokemonsList2,
-  mockPokemon,
-  mockPokemon2,
-} from '../test-utils/mocks/mockPokemon';
-import App from './App';
-import { getPokemon, getPokemonList } from '../features/search/api/api';
+
+import HomePage from './HomePage';
+import { mockLocalStorage } from '../../test-utils/mocks/mockLocalStorage';
+import { getPokemon, getPokemonList } from '../../entities/pokemon/api/api';
+import { mockItemPokemonsList1, mockItemPokemonsList2, mockPokemon, mockPokemon2 } from '../../test-utils/mocks/mockPokemon';
+import { LOCAL_STORAGE_KEY } from '../../shared/constants/constants';
 
 vi.mock('../features/search/api/api', () => {
   return {
@@ -36,7 +32,7 @@ function renderApp() {
   const indexRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '$page',
-    component: App,
+    component: HomePage,
     parseParams: ({ page }) => ({ page: Number(page) }),
     stringifyParams: ({ page }) => ({ page: String(page) }),
   });
@@ -49,7 +45,7 @@ function renderApp() {
   return render(<RouterProvider router={router} />);
 }
 
-describe('App', () => {
+describe('HomePage', () => {
   let storage: ReturnType<typeof mockLocalStorage>;
   beforeEach(() => {
     storage = mockLocalStorage();

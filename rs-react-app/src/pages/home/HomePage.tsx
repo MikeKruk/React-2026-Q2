@@ -1,18 +1,21 @@
 import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
 import { Loader } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { getPokemon, getPokemonList } from '../features/search/api/api';
-import CardList from '../features/search/components/CardList';
-import Pagination from '../features/search/components/Pagination';
-import SearchErrorState from '../features/search/components/SearchErrorState';
-import SearchSection from '../features/search/components/SearchSection';
-import ErrorTestButton from '../shared/components/ErrorTestButton';
-import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../shared/constants/constants';
-import { useLocalStorage } from '../shared/hooks/useLocalStorage';
-import type { Pokemon, PokemonListItem } from '../shared/types/types';
-import { Route as indexRoute } from './routes/index';
+import { Route as indexRoute } from '../../app/routes/index';
+import { getPokemon, getPokemonList } from '../../entities/pokemon/api/api';
+import type {
+  Pokemon,
+  PokemonListItem,
+} from '../../entities/pokemon/types/types';
+import CardList from '../../features/search/components/CardList';
+import Pagination from '../../features/search/components/Pagination';
+import SearchErrorState from '../../features/search/components/SearchErrorState';
+import SearchSection from '../../features/search/components/SearchSection';
+import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../../shared/constants/constants';
+import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
+import ErrorTestButton from '../../shared/ui/ErrorTestButton';
 
-export default function App() {
+export default function HomePage() {
   const isFirstRender = useRef(true);
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);

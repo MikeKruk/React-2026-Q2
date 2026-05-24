@@ -1,5 +1,5 @@
-import type { Pokemon } from '../../../shared/types/types';
-import Card from './Card';
+import Card from '../../../entities/pokemon/components/Card';
+import type { Pokemon } from '../../../entities/pokemon/types/types';
 
 interface CardListProps {
   pokemons: Pokemon[];
