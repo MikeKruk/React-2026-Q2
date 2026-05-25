@@ -1,26 +1,35 @@
 import { render, screen } from '@testing-library/react';
+import { ThemeProvider } from '../../app/context/ThemeContext';
 import AboutPage from './AboutPage';
+
+function renderAboutPage() {
+  return render(
+    <ThemeProvider>
+      <AboutPage />
+    </ThemeProvider>
+  );
+}
 
 describe('AboutPage', () => {
   test('renders heading', () => {
-    render(<AboutPage />);
+    renderAboutPage();
     expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
   });
 
   test('renders author name', () => {
-    render(<AboutPage />);
+    renderAboutPage();
     expect(screen.getByText('MikeKruk')).toBeInTheDocument();
   });
 
   test('renders GitHub link', () => {
-    render(<AboutPage />);
+    renderAboutPage();
     expect(
       screen.getByRole('link', { name: 'GitHub Profile' })
     ).toHaveAttribute('href', 'https://github.com/MikeKruk');
   });
 
   test('renders RS School link', () => {
-    render(<AboutPage />);
+    renderAboutPage();
     expect(
       screen.getByRole('link', { name: 'RS School React course' })
     ).toHaveAttribute('href', 'https://rs.school/courses/reactjs');

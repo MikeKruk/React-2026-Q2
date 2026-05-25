@@ -1,17 +1,29 @@
 import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { ThemeProvider } from '../../../app/context/ThemeContext';
+import { store } from '../../../app/store/store';
 import { mockPokemon } from '../../../test-utils/mocks/mockPokemon';
 import Card from './Card';
 
+function renderCard() {
+  return render(
+    <Provider store={store}>
+      <ThemeProvider>
+        <Card pokemon={mockPokemon} onClick={vi.fn()} />
+      </ThemeProvider>
+    </Provider>
+  );
+}
+
 describe('Card', () => {
-  const onClick = vi.fn();
   test('renders pokemon name', () => {
-    render(<Card pokemon={mockPokemon} onClick={onClick} />);
+    renderCard();
 
     expect(screen.getByText('bulbasaur')).toBeInTheDocument();
   });
 
   test('render pokemon image with correct src and alt', () => {
-    render(<Card pokemon={mockPokemon} onClick={onClick} />);
+    renderCard();
 
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute(
@@ -22,7 +34,7 @@ describe('Card', () => {
   });
 
   test('render pokemon types', () => {
-    render(<Card pokemon={mockPokemon} onClick={onClick} />);
+    renderCard();
 
     expect(screen.getByText('grass')).toBeInTheDocument();
     expect(screen.getByText('poison')).toBeInTheDocument();

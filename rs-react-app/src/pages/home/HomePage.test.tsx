@@ -9,14 +9,21 @@ import {
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-
-import HomePage from './HomePage';
-import { mockLocalStorage } from '../../test-utils/mocks/mockLocalStorage';
 import { getPokemon, getPokemonList } from '../../entities/pokemon/api/api';
-import { mockItemPokemonsList1, mockItemPokemonsList2, mockPokemon, mockPokemon2 } from '../../test-utils/mocks/mockPokemon';
 import { LOCAL_STORAGE_KEY } from '../../shared/constants/constants';
+import { mockLocalStorage } from '../../test-utils/mocks/mockLocalStorage';
+import {
+  mockItemPokemonsList1,
+  mockItemPokemonsList2,
+  mockPokemon,
+  mockPokemon2,
+} from '../../test-utils/mocks/mockPokemon';
+import HomePage from './HomePage';
+import { Provider } from 'react-redux';
+import { store } from '../../app/store/store';
+import { ThemeProvider } from '../../app/context/ThemeContext';
 
-vi.mock('../features/search/api/api', () => {
+vi.mock('../../entities//pokemon//api/api', () => {
   return {
     getPokemonList: vi.fn(),
     getPokemon: vi.fn(),
@@ -25,7 +32,13 @@ vi.mock('../features/search/api/api', () => {
 
 function renderApp() {
   const rootRoute = createRootRoute({
-    component: () => <Outlet />,
+    component: () => (
+      <Provider store={store}>
+        <ThemeProvider>
+        <Outlet />
+        </ThemeProvider>
+      </Provider>
+    ),
     notFoundComponent: () => <div>Not found</div>,
   });
 

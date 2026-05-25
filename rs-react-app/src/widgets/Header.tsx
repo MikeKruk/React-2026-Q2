@@ -44,4 +44,3 @@ export default function Header() {
     </header>
   );
 }
-// 'text-orange-500 font-bold'
