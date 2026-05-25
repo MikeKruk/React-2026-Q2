@@ -1,3 +1,4 @@
+import { useSelectedItems } from '../../../features/selectedItems/hooks/useSelectedItems';
 import type { Pokemon } from '../types/types';
 
 interface CardProps {
@@ -6,11 +7,15 @@ interface CardProps {
 }
 
 export default function Card({ pokemon, onClick }: CardProps) {
+  const { isSelected, handleCheckbox } = useSelectedItems(pokemon);
   return (
     <div
       onClick={() => onClick(pokemon.id)}
       className="border border-gray-500 rounded-md p-4 flex-col items-center flex gap-1"
     >
+      <div className="w-full flex justify-end">
+        <input onClick={handleCheckbox} checked={isSelected} type="checkbox" />
+      </div>
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}
         alt={pokemon.name}
