@@ -9,7 +9,7 @@ export function useSelectedItems(pokemon: Pokemon) {
     state.selectedItems.selectedItems.some((item) => item.id === pokemon.id)
   );
 
-  const handleCheckbox = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isSelected) {
       dispatch(unselectItem(pokemon));
@@ -20,6 +20,6 @@ export function useSelectedItems(pokemon: Pokemon) {
 
   return {
     isSelected,
-    handleCheckbox,
+    handleClick,
   };
 }

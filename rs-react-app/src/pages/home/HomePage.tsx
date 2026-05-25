@@ -11,6 +11,8 @@ import CardList from '../../features/search/components/CardList';
 import Pagination from '../../features/search/components/Pagination';
 import SearchErrorState from '../../features/search/components/SearchErrorState';
 import SearchSection from '../../features/search/components/SearchSection';
+import SelectedItemsFlyout from '../../features/selectedItems/components/SelectedItemsFlyout';
+import { useSelectedItemsCount } from '../../features/selectedItems/hooks/useSelectedItemsCount';
 import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../../shared/constants/constants';
 import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
 import ErrorTestButton from '../../shared/ui/ErrorTestButton';
@@ -27,6 +29,7 @@ export default function HomePage() {
   const { detailsId } = useParams({ strict: false });
   const navigate = useNavigate();
   const totalPages = Math.ceil(totalCount / MAX_LIMIT);
+  const selectedItemsCount = useSelectedItemsCount();
 
   useEffect(() => {
     async function fetch() {
@@ -108,7 +111,9 @@ export default function HomePage() {
   };
 
   return (
-    <main className="flex-1 my-4 flex flex-col gap-8">
+    <main
+      className={`flex-1 my-4 flex flex-col gap-8 ${selectedItemsCount ? 'pb-20 md:pb-0' : ''}`}
+    >
       <SearchSection
         onSearch={handleSearch}
         onChange={handleInputChange}
@@ -143,6 +148,7 @@ export default function HomePage() {
           onPageChange={handlePageChange}
         />
       )}
+      <SelectedItemsFlyout />
       <div className="flex justify-end">
         <ErrorTestButton />
       </div>
