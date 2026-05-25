@@ -1,16 +1,24 @@
-import { useAppDispatch } from '../../../app/store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
 import { useSelectedItemsCount } from '../hooks/useSelectedItemsCount';
+import { downloadCSV } from '../lib/downloadCSV';
 import { unselectAllItems } from '../selectedItemsSlice';
 
 export default function SelectedItemsFlyout() {
   const dispatch = useAppDispatch();
   const selectedItemsCount = useSelectedItemsCount();
+  const selectedPokemons = useAppSelector(
+    (state) => state.selectedItems.selectedItems
+  );
+
+  if (selectedItemsCount === 0) return null;
 
   const handleClick = () => {
     dispatch(unselectAllItems());
   };
 
-  if (selectedItemsCount === 0) return null;
+  const handleDownload = () => {
+    downloadCSV(selectedPokemons);
+  };
 
   return (
     <div
@@ -35,7 +43,10 @@ export default function SelectedItemsFlyout() {
         >
           Unselect all
         </button>
-        <button className="rounded-lg border border-white/20 px-4 py-2 transition hover:bg-white/20 hover:scale-105">
+        <button
+          onClick={handleDownload}
+          className="rounded-lg border border-white/20 px-4 py-2 transition hover:bg-white/20 hover:scale-105"
+        >
           Download
         </button>
       </div>

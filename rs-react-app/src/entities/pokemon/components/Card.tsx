@@ -14,7 +14,7 @@ export default function Card({ pokemon, onClick }: CardProps) {
       className="border border-gray-500 rounded-md p-4 flex-col items-center flex gap-1"
     >
       <div className="w-full flex justify-end">
-        <input onClick={handleClick} checked={isSelected} type="checkbox" />
+        <input onClick={handleClick} onChange={() => {}} checked={isSelected} type="checkbox" />
       </div>
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}
