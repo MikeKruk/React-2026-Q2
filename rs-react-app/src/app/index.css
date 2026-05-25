@@ -15,7 +15,8 @@ body {
 :root {
   --text: #6b6375;
   --text-h: #08060d;
-  --bg: #FFE4C4;
+  --bg: #ffe4c4;
+  --card-bg: #fff8f0;
   --border: #e5e4e7;
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
@@ -25,8 +26,23 @@ body {
   --mono: ui-monospace, Consolas, monospace;
 }
 
+[data-theme='dark'] {
+  --text: #c4b8d4;
+  --text-h: #ede8f5;
+  --bg: #0d0b14;
+  --card-bg: #16122a;
+  --border: #3b2f5e;
+  --shadow:
+    rgba(139, 92, 246, 0.15) 0 10px 15px -3px,
+    rgba(109, 40, 217, 0.1) 0 4px 6px -2px;
+}
+
 @theme inline {
-  --color-background: var(--bg)
+  --color-background: var(--bg);
+  --color-text: var(--text);
+  --color-text-h: var(--text-h);
+  --color-card-bg: var(--card-bg);
+  --color-border: var(--border);
 }
 
 @layer base {
@@ -34,6 +50,12 @@ body {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   a {
