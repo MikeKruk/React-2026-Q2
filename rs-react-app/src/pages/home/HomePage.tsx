@@ -1,18 +1,23 @@
 import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
 import { Loader } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { getPokemon, getPokemonList } from '../features/search/api/api';
-import CardList from '../features/search/components/CardList';
-import Pagination from '../features/search/components/Pagination';
-import SearchErrorState from '../features/search/components/SearchErrorState';
-import SearchSection from '../features/search/components/SearchSection';
-import ErrorTestButton from '../shared/components/ErrorTestButton';
-import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../shared/constants/constants';
-import { useLocalStorage } from '../shared/hooks/useLocalStorage';
-import type { Pokemon, PokemonListItem } from '../shared/types/types';
-import { Route as indexRoute } from './routes/index';
+import { Route as indexRoute } from '../../app/routes/index';
+import { getPokemon, getPokemonList } from '../../entities/pokemon/api/api';
+import type {
+  Pokemon,
+  PokemonListItem,
+} from '../../entities/pokemon/types/types';
+import CardList from '../../features/search/components/CardList';
+import Pagination from '../../features/search/components/Pagination';
+import SearchErrorState from '../../features/search/components/SearchErrorState';
+import SearchSection from '../../features/search/components/SearchSection';
+import SelectedItemsFlyout from '../../features/selectedItems/components/SelectedItemsFlyout';
+import { useSelectedItemsCount } from '../../features/selectedItems/hooks/useSelectedItemsCount';
+import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../../shared/constants/constants';
+import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
+import ErrorTestButton from '../../shared/ui/ErrorTestButton';
 
-export default function App() {
+export default function HomePage() {
   const isFirstRender = useRef(true);
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
@@ -24,6 +29,7 @@ export default function App() {
   const { detailsId } = useParams({ strict: false });
   const navigate = useNavigate();
   const totalPages = Math.ceil(totalCount / MAX_LIMIT);
+  const selectedItemsCount = useSelectedItemsCount();
 
   useEffect(() => {
     async function fetch() {
@@ -105,7 +111,9 @@ export default function App() {
   };
 
   return (
-    <main className="flex-1 my-4 flex flex-col gap-8">
+    <main
+      className={`flex-1 my-4 flex flex-col gap-8 ${selectedItemsCount ? 'pb-20 md:pb-0' : ''}`}
+    >
       <SearchSection
         onSearch={handleSearch}
         onChange={handleInputChange}
@@ -140,6 +148,7 @@ export default function App() {
           onPageChange={handlePageChange}
         />
       )}
+      <SelectedItemsFlyout />
       <div className="flex justify-end">
         <ErrorTestButton />
       </div>

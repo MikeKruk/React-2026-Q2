@@ -1,11 +1,12 @@
 import { createRoute, notFound } from '@tanstack/react-router';
-import App from '../App';
+
 import { Route as rootRoute } from './__root';
+import HomePage from '../../pages/home/HomePage';
 
 export const Route = createRoute({
   getParentRoute: () => rootRoute,
   path: '$page',
-  component: App,
+  component: HomePage,
   parseParams: ({ page }) => ({ page: Number(page) }),
   stringifyParams: ({ page }) => ({ page: String(page) }),
   beforeLoad: ({ params: { page } }) => {

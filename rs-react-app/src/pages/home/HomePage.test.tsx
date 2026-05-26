@@ -9,18 +9,21 @@ import {
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { LOCAL_STORAGE_KEY } from '../shared/constants/constants';
-import { mockLocalStorage } from '../test-utils/mocks/mockLocalStorage';
+import { getPokemon, getPokemonList } from '../../entities/pokemon/api/api';
+import { LOCAL_STORAGE_KEY } from '../../shared/constants/constants';
+import { mockLocalStorage } from '../../test-utils/mocks/mockLocalStorage';
 import {
   mockItemPokemonsList1,
   mockItemPokemonsList2,
   mockPokemon,
   mockPokemon2,
-} from '../test-utils/mocks/mockPokemon';
-import App from './App';
-import { getPokemon, getPokemonList } from '../features/search/api/api';
+} from '../../test-utils/mocks/mockPokemon';
+import HomePage from './HomePage';
+import { Provider } from 'react-redux';
+import { store } from '../../app/store/store';
+import { ThemeProvider } from '../../app/context/ThemeContext';
 
-vi.mock('../features/search/api/api', () => {
+vi.mock('../../entities//pokemon//api/api', () => {
   return {
     getPokemonList: vi.fn(),
     getPokemon: vi.fn(),
@@ -29,14 +32,20 @@ vi.mock('../features/search/api/api', () => {
 
 function renderApp() {
   const rootRoute = createRootRoute({
-    component: () => <Outlet />,
+    component: () => (
+      <Provider store={store}>
+        <ThemeProvider>
+        <Outlet />
+        </ThemeProvider>
+      </Provider>
+    ),
     notFoundComponent: () => <div>Not found</div>,
   });
 
   const indexRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '$page',
-    component: App,
+    component: HomePage,
     parseParams: ({ page }) => ({ page: Number(page) }),
     stringifyParams: ({ page }) => ({ page: String(page) }),
   });
@@ -49,7 +58,7 @@ function renderApp() {
   return render(<RouterProvider router={router} />);
 }
 
-describe('App', () => {
+describe('HomePage', () => {
   let storage: ReturnType<typeof mockLocalStorage>;
   beforeEach(() => {
     storage = mockLocalStorage();

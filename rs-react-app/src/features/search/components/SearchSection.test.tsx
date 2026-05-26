@@ -1,10 +1,25 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '../../../app/context/ThemeContext';
 import SearchSection from './SearchSection';
+
+const defaultPorps = {
+  value: '',
+  onSearch: () => {},
+  onChange: () => {},
+}
+
+function renderSearchSection(props = defaultPorps) {
+  return render(
+    <ThemeProvider>
+      <SearchSection {...props} />
+    </ThemeProvider>
+  );
+}
 
 describe('SearchSection', () => {
   test('renders search input and button', () => {
-    render(<SearchSection value="" onSearch={() => {}} onChange={() => {}} />);
+    renderSearchSection();
 
     const input = screen.getByLabelText('Search field');
     const button = screen.getByRole('button');
@@ -14,13 +29,7 @@ describe('SearchSection', () => {
   });
 
   test('displays provided value in input', () => {
-    render(
-      <SearchSection
-        value="bulbasaur"
-        onSearch={() => {}}
-        onChange={() => {}}
-      />
-    );
+    renderSearchSection({...defaultPorps, value: 'bulbasaur'});
 
     const input = screen.getByLabelText('Search field');
 
@@ -29,9 +38,7 @@ describe('SearchSection', () => {
 
   test('calls onSearch when button is clicked', async () => {
     const handleClick = vi.fn();
-    render(
-      <SearchSection value="" onSearch={handleClick} onChange={() => {}} />
-    );
+    renderSearchSection({...defaultPorps, onSearch: handleClick});
 
     const button = screen.getByRole('button');
     await userEvent.click(button);
@@ -41,9 +48,7 @@ describe('SearchSection', () => {
 
   test('calls onChange when user types', async () => {
     const handleChange = vi.fn();
-    render(
-      <SearchSection value="" onSearch={() => {}} onChange={handleChange} />
-    );
+    renderSearchSection({...defaultPorps, onChange: handleChange});
 
     const input = screen.getByLabelText('Search field');
     await userEvent.type(input, 'bulbasaur');

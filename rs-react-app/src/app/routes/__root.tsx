@@ -1,9 +1,9 @@
 import { createRootRoute, Outlet, redirect } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import Footer from '../../layout/Footer';
-import Header from '../../layout/Header';
-import notFoundPage from '../../pages/notFoundPage';
-import ErrorBoundary from '../../shared/components/ErrorBoundary';
+import notFoundPage from '../../pages/not-found/notFoundPage';
+import ErrorBoundary from '../../shared/ui/ErrorBoundary';
+import Footer from '../../widgets/Footer';
+import Header from '../../widgets/Header';
 
 function RootComponent() {
   return (

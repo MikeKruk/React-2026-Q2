@@ -1,4 +1,7 @@
 import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { ThemeProvider } from '../../../app/context/ThemeContext';
+import { store } from '../../../app/store/store';
 import {
   mockPokemon,
   mockPokemon2,
@@ -7,11 +10,23 @@ import CardList from './CardList';
 
 const arrPokemons = [mockPokemon, mockPokemon2];
 
+function renderCardList(pokemos = arrPokemons) {
+  return render(
+    <Provider store={store}>
+      <ThemeProvider>
+        <CardList
+          pokemons={pokemos}
+          onClick={vi.fn()}
+          isDetailOpen={false}
+        />
+      </ThemeProvider>
+    </Provider>
+  );
+}
+
 describe('CardList', () => {
-  const onClick = vi.fn();
-  const isDetailOpen = false;
   test('renders correct number of cards', () => {
-    render(<CardList pokemons={arrPokemons} onClick={onClick} isDetailOpen={isDetailOpen} />);
+    renderCardList();
 
     const imgs = screen.getAllByRole('img');
 
@@ -19,7 +34,7 @@ describe('CardList', () => {
   });
 
   test('renders description of pokemon', () => {
-    render(<CardList pokemons={arrPokemons} onClick={onClick} isDetailOpen={isDetailOpen} />);
+    renderCardList();
 
     const name1 = screen.getByText('bulbasaur');
     const name2 = screen.getByText('charmander');
@@ -35,7 +50,7 @@ describe('CardList', () => {
   });
 
   test('render nothing when pokemons array is empty', () => {
-    render(<CardList pokemons={[]} onClick={onClick} isDetailOpen={isDetailOpen} />);
+    renderCardList([]);
 
     const imgs = screen.queryAllByRole('img');
     expect(imgs).toHaveLength(0);

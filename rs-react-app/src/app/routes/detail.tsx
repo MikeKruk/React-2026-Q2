@@ -1,5 +1,5 @@
 import { createRoute, notFound } from '@tanstack/react-router';
-import PokemonDetails from '../../features/search/components/PokemonDetails';
+import PokemonDetails from '../../entities/pokemon/components/PokemonDetails';
 import { Route as indexRoute } from './index';
 
 export const Route = createRoute({
