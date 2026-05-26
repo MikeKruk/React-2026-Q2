@@ -11,8 +11,8 @@ export default function Header() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const gradientText = isDark
-    ? 'bg-linear-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent'
-    : 'bg-linear-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent ';
+    ? 'bg-linear-to-r from-violet-400 to-indigo-500 bg-clip-text'
+    : 'bg-linear-to-r from-yellow-500 to-orange-500 bg-clip-text';
   return (
     <header className="flex justify-between items-center">
       <h1
@@ -28,13 +28,13 @@ export default function Header() {
         <Link
           to="/$page"
           params={{ page: 1 }}
-          className={`hover:underline active:${gradientText} ${isHome ? `${gradientText} font-bold` : ''}`}
+          className={`hover:underline ${isHome ? `${gradientText} font-bold` : ''}`}
         >
           Home
         </Link>
         <Link
           to="/about"
-          className={`hover:underline active:${gradientText}`}
+          className={`hover:underline`}
           activeProps={{ className: `${gradientText} font-bold` }}
         >
           About

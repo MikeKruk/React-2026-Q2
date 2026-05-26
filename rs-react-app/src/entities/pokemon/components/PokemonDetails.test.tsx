@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '../../../app/context/ThemeContext';
 import { mockPokemon } from '../../../test-utils/mocks/mockPokemon';
 import { getPokemon } from '../api/api';
 import PokemonDetails from './PokemonDetails';
@@ -17,7 +18,13 @@ vi.mock('../api/api', () => ({
 }));
 
 function renderPokemonDetails(detailsId = 1, page = 1) {
-  const rootRoute = createRootRoute({ component: () => <Outlet /> });
+  const rootRoute = createRootRoute({
+    component: () => (
+      <ThemeProvider>
+        <Outlet />
+      </ThemeProvider>
+    ),
+  });
   const pageRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '$page',

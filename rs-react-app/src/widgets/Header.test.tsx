@@ -4,10 +4,10 @@ import {
   RouterProvider,
 } from '@tanstack/react-router';
 import { render, screen, waitFor } from '@testing-library/react';
-import Header from './Header';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '../app/context/ThemeContext';
 import { store } from '../app/store/store';
+import Header from './Header';
 
 function renderHeader() {
   const rootRoute = createRootRoute({
