@@ -2,10 +2,13 @@ import { useNavigate } from '@tanstack/react-router';
 import { Loader, X } from 'lucide-react';
 import { useTheme } from '../../../app/context/hooks/useTheme';
 import { Route as detailsRoute } from '../../../app/routes/detail';
+import { useAppDispatch } from '../../../app/store/hooks';
+import RefreshButton from '../../../shared/ui/RefreshButton';
 import { getErrorMessage } from '../../../shared/utils/getErrorMessage';
-import { useGetPokemonQuery } from '../api/pokemonApi';
+import { pokemonApi, useGetPokemonQuery } from '../api/pokemonApi';
 
 export default function PokemonDetails() {
+  const dispatch = useAppDispatch();
   const { page, detailsId } = detailsRoute.useParams();
   const navigate = useNavigate();
   const { data: pokemon, isLoading, error } = useGetPokemonQuery(detailsId);
@@ -38,9 +41,16 @@ export default function PokemonDetails() {
     });
   };
 
+  const handelRefresh = () => {
+    dispatch(
+      pokemonApi.util.invalidateTags([{ type: 'Pokemon', id: detailsId }])
+    );
+  };
+
   return (
     <div className="border border-gray-500 rounded-md p-4 flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <RefreshButton onClick={handelRefresh} isText={false} />
         <button
           aria-label="Close details"
           onClick={handleClose}

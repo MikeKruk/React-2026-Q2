@@ -16,7 +16,7 @@ export default class ErrorBoundary extends Component<
   };
 
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(_: Error): State {
     return { hasError: true };
   }
 

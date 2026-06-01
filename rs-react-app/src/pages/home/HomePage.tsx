@@ -1,7 +1,9 @@
 import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
 import { Loader } from 'lucide-react';
 import { Route as indexRoute } from '../../app/routes/index';
+import { useAppDispatch } from '../../app/store/hooks';
 import {
+  pokemonApi,
   useGetPokemonListQuery,
   useGetPokemonQuery,
 } from '../../entities/pokemon/api/pokemonApi';
@@ -14,9 +16,11 @@ import { useSelectedItemsCount } from '../../features/selectedItems/hooks/useSel
 import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../../shared/constants/constants';
 import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
 import ErrorTestButton from '../../shared/ui/ErrorTestButton';
+import RefreshButton from '../../shared/ui/RefreshButton';
 import { getErrorMessage } from '../../shared/utils/getErrorMessage';
 
 export default function HomePage() {
+  const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useLocalStorage(LOCAL_STORAGE_KEY, '');
   const { page: currentPage } = indexRoute.useParams();
   const { detailsId } = useParams({ strict: false });
@@ -76,6 +80,10 @@ export default function HomePage() {
     });
   };
 
+  const handelRefresh = () => {
+    dispatch(pokemonApi.util.invalidateTags(['PokemonList']));
+  };
+
   return (
     <main
       className={`flex-1 my-4 flex flex-col gap-8 ${selectedItemsCount ? 'pb-20 md:pb-0' : ''}`}
@@ -115,7 +123,8 @@ export default function HomePage() {
         />
       )}
       <SelectedItemsFlyout />
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <RefreshButton onClick={handelRefresh} isText={true} />
         <ErrorTestButton />
       </div>
     </main>

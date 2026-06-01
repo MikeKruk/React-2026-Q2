@@ -6,6 +6,7 @@ export const pokemonApi = createApi({
   reducerPath: 'pokemonApi',
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL_API }),
   keepUnusedDataFor: CACHE_TTL,
+  tagTypes: ['PokemonList', 'Pokemon'],
   endpoints: (builder) => ({
     getPokemonList: builder.query<
       { results: Pokemon[]; count: number },
@@ -39,12 +40,14 @@ export const pokemonApi = createApi({
           };
         }
       },
+      providesTags: ['PokemonList'],
     }),
     getPokemon: builder.query<Pokemon, string | number>({
       query: (param) => `/pokemon/${param}`,
       transformErrorResponse: (_, __, arg) => {
         return { status: 500, data: `Failed to get pokemon ${arg}` };
       },
+      providesTags: (_, __, arg) => [{ type: 'Pokemon', id: arg }],
     }),
   }),
 });
