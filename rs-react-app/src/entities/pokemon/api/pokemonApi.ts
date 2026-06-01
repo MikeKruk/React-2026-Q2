@@ -8,15 +8,43 @@ export const pokemonApi = createApi({
   keepUnusedDataFor: CACHE_TTL,
   endpoints: (builder) => ({
     getPokemonList: builder.query<
-      { results: PokemonListItem[]; count: number },
+      { results: Pokemon[]; count: number },
       { limit: number; offset: number }
     >({
-      query: ({ limit, offset }) => `/pokemon?limit=${limit}&offset=${offset}`,
-      transformErrorResponse: () => 'Failed to get pokemon list',
+      queryFn: async ({ limit, offset }) => {
+        try {
+          const response = await fetch(
+            `${BASE_URL_API}pokemon?limit=${limit}&offset=${offset}`
+          );
+          if (!response.ok) throw new Error('Failed to get pokemon list');
+          const {
+            results,
+            count,
+          }: { results: PokemonListItem[]; count: number } =
+            await response.json();
+          const pokemons = await Promise.all(
+            results.map((pokemon) =>
+              fetch(`${BASE_URL_API}pokemon/${pokemon.name}`).then((res) =>
+                res.json()
+              )
+            )
+          );
+          return { data: { results: pokemons, count } };
+        } catch {
+          return {
+            error: {
+              status: 500,
+              data: 'Failed to get pokemon list',
+            },
+          };
+        }
+      },
     }),
     getPokemon: builder.query<Pokemon, string | number>({
       query: (param) => `/pokemon/${param}`,
-      transformErrorResponse: (_, __, arg) => `Failed to get pokemon ${arg}`,
+      transformErrorResponse: (_, __, arg) => {
+        return { status: 500, data: `Failed to get pokemon ${arg}` };
+      },
     }),
   }),
 });

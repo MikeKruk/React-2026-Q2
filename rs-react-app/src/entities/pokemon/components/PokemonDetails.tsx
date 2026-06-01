@@ -1,41 +1,21 @@
 import { useNavigate } from '@tanstack/react-router';
 import { Loader, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useTheme } from '../../../app/context/hooks/useTheme';
 import { Route as detailsRoute } from '../../../app/routes/detail';
-import { getPokemon } from '../api/api';
-import type { Pokemon } from '../types/types';
+import { getErrorMessage } from '../../../shared/utils/getErrorMessage';
+import { useGetPokemonQuery } from '../api/pokemonApi';
 
 export default function PokemonDetails() {
   const { page, detailsId } = detailsRoute.useParams();
   const navigate = useNavigate();
-  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data: pokemon, isLoading, error } = useGetPokemonQuery(detailsId);
+  const errorMessage = getErrorMessage(error);
+
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const hoverClass = isDark
     ? 'hover:bg-violet-400/20 hover:border-violet-400 active:bg-violet-400/20 active:border-violet-400'
     : 'hover:bg-orange-400/70 hover:border-orange-400 active:bg-orange-400/70 active:border-orange-400';
-
-  useEffect(() => {
-    async function fetch() {
-      if (!detailsId) return;
-      setIsLoading(true);
-      setError(null);
-      try {
-        const pokemon = await getPokemon(detailsId);
-        setPokemon(pokemon);
-      } catch (error: unknown) {
-        setError(
-          error instanceof Error ? error.message : 'Something went wrong'
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetch();
-  }, [detailsId]);
 
   if (isLoading) {
     return (
@@ -46,7 +26,7 @@ export default function PokemonDetails() {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div>{errorMessage}</div>;
   }
 
   if (!pokemon) return null;
