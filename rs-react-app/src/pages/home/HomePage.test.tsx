@@ -9,33 +9,49 @@ import {
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { getPokemon, getPokemonList } from '../../entities/pokemon/api/api';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { ThemeProvider } from '../../app/context/ThemeContext';
+import {
+  pokemonApi,
+  useGetPokemonListQuery,
+  useGetPokemonQuery,
+} from '../../entities/pokemon/api/pokemonApi';
+import SelectedItemsReducer from '../../features/selectedItems/selectedItemsSlice';
 import { LOCAL_STORAGE_KEY } from '../../shared/constants/constants';
 import { mockLocalStorage } from '../../test-utils/mocks/mockLocalStorage';
-import {
-  mockItemPokemonsList1,
-  mockItemPokemonsList2,
-  mockPokemon,
-  mockPokemon2,
-} from '../../test-utils/mocks/mockPokemon';
+import { mockPokemon } from '../../test-utils/mocks/mockPokemon';
 import HomePage from './HomePage';
-import { Provider } from 'react-redux';
-import { store } from '../../app/store/store';
-import { ThemeProvider } from '../../app/context/ThemeContext';
 
-vi.mock('../../entities//pokemon//api/api', () => {
+vi.mock('../../entities/pokemon/api/pokemonApi', () => {
   return {
-    getPokemonList: vi.fn(),
-    getPokemon: vi.fn(),
+    pokemonApi: {
+      util: {
+        invalidateTags: vi.fn(),
+      },
+    },
+    useGetPokemonListQuery: vi.fn(),
+    useGetPokemonQuery: vi.fn(),
   };
 });
 
+const mockList = useGetPokemonListQuery as ReturnType<typeof vi.fn>;
+const mockSearch = useGetPokemonQuery as ReturnType<typeof vi.fn>;
+
 function renderApp() {
+  const testStore = configureStore({
+    reducer: {
+      selectedItems: SelectedItemsReducer,
+      [pokemonApi.reducerPath]: pokemonApi.reducer,
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  });
+  
   const rootRoute = createRootRoute({
     component: () => (
-      <Provider store={store}>
+      <Provider store={testStore}>
         <ThemeProvider>
-        <Outlet />
+          <Outlet />
         </ThemeProvider>
       </Provider>
     ),
@@ -67,13 +83,17 @@ describe('HomePage', () => {
       writable: true,
     });
 
-    vi.mocked(getPokemonList).mockResolvedValue({
-      results: [{ ...mockItemPokemonsList1 }, { ...mockItemPokemonsList2 }],
-      count: 2,
+    mockList.mockReturnValue({
+      data: { results: [], count: 0 },
+      isLoading: false,
+      error: undefined,
     });
-    vi.mocked(getPokemon)
-      .mockResolvedValueOnce(mockPokemon)
-      .mockResolvedValueOnce(mockPokemon2);
+
+    mockSearch.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: undefined,
+    });
   });
 
   afterEach(() => {
@@ -88,16 +108,20 @@ describe('HomePage', () => {
     });
   });
 
-  test('fetches pokemons list on mount when localStorage is empty', async () => {
+  test('calls useGetPokemonListQuery on mount when localStorage is empty', async () => {
     renderApp();
 
     await waitFor(() => {
-      expect(getPokemonList).toHaveBeenCalled();
+      expect(useGetPokemonListQuery).toHaveBeenCalled();
     });
   });
 
   test('shows loading indicator while fetching', async () => {
-    vi.mocked(getPokemonList).mockReturnValue(new Promise(() => {}));
+    mockList.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: undefined,
+    });
     renderApp();
 
     await waitFor(() => {
@@ -107,20 +131,24 @@ describe('HomePage', () => {
     });
   });
 
-  test('fetches pokemon by name when localStorage has saved term', async () => {
-    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
+  test('calls useGetPokemonQuery localStorage has saved term', async () => {
     storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
     renderApp();
 
     await waitFor(() => {
-      expect(getPokemon).toHaveBeenCalledWith('bulbasaur');
+      expect(mockSearch).toHaveBeenCalledWith(
+        'bulbasaur',
+        expect.objectContaining({ skip: false })
+      );
     });
   });
 
   test('shows error state when fails', async () => {
-    vi.mocked(getPokemonList).mockRejectedValue(
-      new Error('Failed to get pokemon list')
-    );
+    mockList.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: { status: 500, data: 'Failed to get pokemon list' },
+    });
     renderApp();
 
     await waitFor(() => {
@@ -135,15 +163,14 @@ describe('HomePage', () => {
     const searchButton = await screen.findByRole('button', { name: 'Search' });
     const input = await screen.findByLabelText('Search field');
 
-    await waitFor(() => {
-      expect(getPokemonList).toHaveBeenCalled();
-    });
-
     await userEvent.type(input, 'bulbasaur');
     await userEvent.click(searchButton);
 
     await waitFor(() => {
-      expect(getPokemon).toHaveBeenCalledWith('bulbasaur');
+      expect(mockSearch).toHaveBeenCalledWith(
+        'bulbasaur',
+        expect.objectContaining({ skip: false })
+      );
     });
   });
 
@@ -151,12 +178,6 @@ describe('HomePage', () => {
     renderApp();
     const searchButton = await screen.findByRole('button', { name: 'Search' });
     const input = await screen.findByLabelText('Search field');
-
-    await waitFor(() => {
-      expect(getPokemonList).toHaveBeenCalled();
-    });
-
-    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
 
     await userEvent.type(input, 'bulbasaur');
     await userEvent.click(searchButton);
@@ -169,22 +190,25 @@ describe('HomePage', () => {
     });
   });
 
-  test('dosent fetch again when search term is the same', async () => {
-    storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
-    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
-    renderApp();
-    const searchButton = await screen.findByRole('button', { name: 'Search' });
-    await waitFor(() => {
-      expect(getPokemon).toHaveBeenCalled();
+  test('shows pokemon when search returns result', async () => {
+    mockSearch.mockReturnValue({
+      data: mockPokemon,
+      isLoading: false,
+      error: undefined,
     });
-
-    await userEvent.click(searchButton);
-
-    expect(getPokemon).toHaveBeenCalledTimes(1);
+    storage.setItem(LOCAL_STORAGE_KEY, 'bulbasaur');
+    renderApp();
+    await waitFor(() => {
+      expect(useGetPokemonQuery).toHaveBeenCalled();
+    });
   });
 
-  test('shows fallback error message when is error is not an Error instance ', async () => {
-    vi.mocked(getPokemonList).mockRejectedValue('error');
+  test('shows fallback error message when has no message', async () => {
+    mockList.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: { status: 500, data: 'Something went wrong' },
+    });
     renderApp();
 
     await waitFor(() => {
