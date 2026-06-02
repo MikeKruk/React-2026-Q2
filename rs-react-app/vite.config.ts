@@ -27,7 +27,9 @@ export default defineConfig({
         'src/index.{js,jsx,ts,tsx}',
         'src/setupTests.{js,ts}',
         'src/**/*.d.ts',
-        'src/routeTree.gen.ts'
+        'src/routeTree.gen.ts',
+        'src/app/routes/*.tsx',
+        'src/entities/pokemon/types/*.ts'
       ],
       thresholds: {
         statements: 80,

@@ -1,3 +1,4 @@
+import { configureStore } from '@reduxjs/toolkit';
 import {
   createMemoryHistory,
   createRootRoute,
@@ -8,21 +9,39 @@ import {
 } from '@tanstack/react-router';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
 import { ThemeProvider } from '../../../app/context/ThemeContext';
+import SelectedItemsReducer from '../../../features/selectedItems/selectedItemsSlice';
 import { mockPokemon } from '../../../test-utils/mocks/mockPokemon';
-import { getPokemon } from '../api/api';
+import { useGetPokemonQuery } from '../api/pokemonApi';
 import PokemonDetails from './PokemonDetails';
 
-vi.mock('../api/api', () => ({
-  getPokemon: vi.fn(),
-}));
+vi.mock('../api/pokemonApi', () => {
+  return {
+    pokemonApi: {
+      util: {
+        invalidateTags: vi.fn(),
+      },
+    },
+    useGetPokemonQuery: vi.fn(),
+  };
+});
+
+const mockPokemonQuery = useGetPokemonQuery as ReturnType<typeof vi.fn>;
 
 function renderPokemonDetails(detailsId = 1, page = 1) {
+  const testStore = configureStore({
+    reducer: {
+      selectedItems: SelectedItemsReducer,
+    },
+  });
   const rootRoute = createRootRoute({
     component: () => (
-      <ThemeProvider>
-        <Outlet />
-      </ThemeProvider>
+      <Provider store={testStore}>
+        <ThemeProvider>
+          <Outlet />
+        </ThemeProvider>
+      </Provider>
     ),
   });
   const pageRoute = createRoute({
@@ -50,7 +69,11 @@ describe('PokemonDetails', () => {
   afterEach(() => vi.clearAllMocks());
 
   test('shows loading indicator while fetching', async () => {
-    vi.mocked(getPokemon).mockReturnValue(new Promise(() => {}));
+    mockPokemonQuery.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: undefined,
+    });
     renderPokemonDetails();
     await waitFor(() => {
       expect(screen.getByLabelText('Loading')).toBeInTheDocument();
@@ -58,7 +81,11 @@ describe('PokemonDetails', () => {
   });
 
   test('shows pokemon details after fetch', async () => {
-    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
+    mockPokemonQuery.mockReturnValue({
+      data: mockPokemon,
+      isLoading: false,
+      error: undefined,
+    });
     renderPokemonDetails();
     await waitFor(() => {
       expect(screen.getByText(mockPokemon.name)).toBeInTheDocument();
@@ -66,9 +93,14 @@ describe('PokemonDetails', () => {
   });
 
   test('shows error when fetch fails', async () => {
-    vi.mocked(getPokemon).mockRejectedValue(
-      new Error('Failed to get pokemon 1')
-    );
+    mockPokemonQuery.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: {
+        status: 500,
+        data: 'Failed to get pokemon 1',
+      },
+    });
     renderPokemonDetails();
     await waitFor(() => {
       expect(screen.getByText('Failed to get pokemon 1')).toBeInTheDocument();
@@ -76,7 +108,11 @@ describe('PokemonDetails', () => {
   });
 
   test('closes details when close button clicked', async () => {
-    vi.mocked(getPokemon).mockResolvedValue(mockPokemon);
+    mockPokemonQuery.mockReturnValue({
+      data: mockPokemon,
+      isLoading: false,
+      error: undefined,
+    });
     renderPokemonDetails();
     await waitFor(() => {
       expect(screen.getByLabelText('Close details')).toBeInTheDocument();

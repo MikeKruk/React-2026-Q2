@@ -10,7 +10,7 @@ export const Route = createRoute({
   parseParams: ({ page }) => ({ page: Number(page) }),
   stringifyParams: ({ page }) => ({ page: String(page) }),
   beforeLoad: ({ params: { page } }) => {
-    if (isNaN(page) || page < 1) {
+    if (isNaN(page) || page < 1 || page >= 58) {
       throw notFound();
     }
   },

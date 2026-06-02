@@ -1,12 +1,12 @@
 import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
 import { Loader } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
 import { Route as indexRoute } from '../../app/routes/index';
-import { getPokemon, getPokemonList } from '../../entities/pokemon/api/api';
-import type {
-  Pokemon,
-  PokemonListItem,
-} from '../../entities/pokemon/types/types';
+import { useAppDispatch } from '../../app/store/hooks';
+import {
+  pokemonApi,
+  useGetPokemonListQuery,
+  useGetPokemonQuery,
+} from '../../entities/pokemon/api/pokemonApi';
 import CardList from '../../features/search/components/CardList';
 import Pagination from '../../features/search/components/Pagination';
 import SearchErrorState from '../../features/search/components/SearchErrorState';
@@ -16,80 +16,50 @@ import { useSelectedItemsCount } from '../../features/selectedItems/hooks/useSel
 import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../../shared/constants/constants';
 import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
 import ErrorTestButton from '../../shared/ui/ErrorTestButton';
+import RefreshButton from '../../shared/ui/RefreshButton';
+import { getErrorMessage } from '../../shared/utils/getErrorMessage';
 
 export default function HomePage() {
-  const isFirstRender = useRef(true);
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useLocalStorage(LOCAL_STORAGE_KEY, '');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
   const { page: currentPage } = indexRoute.useParams();
   const { detailsId } = useParams({ strict: false });
   const navigate = useNavigate();
-  const totalPages = Math.ceil(totalCount / MAX_LIMIT);
+  const offset = (currentPage - 1) * MAX_LIMIT;
   const selectedItemsCount = useSelectedItemsCount();
+  const isSearching = inputValue.trim() !== '';
 
-  useEffect(() => {
-    async function fetch() {
-      await fetchPokemons(inputValue.trim(), currentPage);
-    }
+  const {
+    data: listData,
+    isLoading: isLoadingList,
+    error: listError,
+  } = useGetPokemonListQuery(
+    { limit: MAX_LIMIT, offset },
+    { skip: isSearching }
+  );
+  const {
+    data: searchedPokemon,
+    isLoading: isSearchLoading,
+    error: searchError,
+  } = useGetPokemonQuery(inputValue.trim(), { skip: !isSearching });
 
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      fetch();
-      return;
-    }
+  const pokemons = isSearching
+    ? searchedPokemon
+      ? [searchedPokemon]
+      : []
+    : (listData?.results ?? []);
+  const totalPages = isSearching
+    ? 0
+    : Math.ceil((listData?.count ?? 0) / MAX_LIMIT);
+  const isLoading = isLoadingList || isSearchLoading;
 
-    if (inputValue.trim() !== '') return;
-    fetch();
-  }, [currentPage]);
-
-  async function fetchPokemons(term: string, currentPage: number) {
-    setIsLoading(true);
-    setError(null);
-    try {
-      if (term === '') {
-        const offset = (currentPage - 1) * MAX_LIMIT;
-        const {
-          results,
-          count,
-        }: { results: PokemonListItem[]; count: number } = await getPokemonList(
-          MAX_LIMIT,
-          offset
-        );
-        setTotalCount(count);
-        const pokemons: Pokemon[] = await Promise.all(
-          results.map((pokemon) => getPokemon(pokemon.name))
-        );
-
-        setPokemons(pokemons);
-        setLastSearchTerm('');
-      } else {
-        const pokemon = await getPokemon(term);
-
-        setPokemons([pokemon]);
-        setLastSearchTerm(term);
-        setTotalCount(1);
-      }
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Something went wrong');
-      setLastSearchTerm(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const errorMessage = getErrorMessage(listError || searchError);
 
   const handleSearch = async () => {
-    const term = inputValue.trim();
-
-    if (term === lastSearchTerm) return;
     navigate({
       to: '/$page',
       params: { page: 1 },
     });
-    await fetchPokemons(term, 1);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -110,6 +80,10 @@ export default function HomePage() {
     });
   };
 
+  const handelRefresh = () => {
+    dispatch(pokemonApi.util.invalidateTags(['PokemonList']));
+  };
+
   return (
     <main
       className={`flex-1 my-4 flex flex-col gap-8 ${selectedItemsCount ? 'pb-20 md:pb-0' : ''}`}
@@ -121,8 +95,8 @@ export default function HomePage() {
       />
       <div className="flex gap-4 items-start">
         <div className={detailsId ? 'w-1/2 md:flex-1' : 'w-full'}>
-          {error ? (
-            <SearchErrorState message={error} onRetry={handleSearch} />
+          {errorMessage ? (
+            <SearchErrorState message={errorMessage} onRetry={handleSearch} />
           ) : isLoading ? (
             <div className="flex-1 flex justify-center items-center">
               <Loader className="animate-spin" aria-label="Loading" />
@@ -141,7 +115,7 @@ export default function HomePage() {
           </div>
         )}
       </div>
-      {!error && !isLoading && totalPages > 1 && (
+      {!errorMessage && !isLoading && totalPages > 1 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -149,7 +123,8 @@ export default function HomePage() {
         />
       )}
       <SelectedItemsFlyout />
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <RefreshButton onClick={handelRefresh} isText={true} />
         <ErrorTestButton />
       </div>
     </main>
