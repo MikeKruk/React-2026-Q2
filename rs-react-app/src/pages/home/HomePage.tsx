@@ -1,5 +1,6 @@
 import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
 import { Loader } from 'lucide-react';
+import { useState } from 'react';
 import { Route as indexRoute } from '../../app/routes/index';
 import { useAppDispatch } from '../../app/store/hooks';
 import {
@@ -16,6 +17,7 @@ import { useSelectedItemsCount } from '../../features/selectedItems/hooks/useSel
 import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../../shared/constants/constants';
 import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
 import ErrorTestButton from '../../shared/ui/ErrorTestButton';
+import Modal from '../../shared/ui/Modal';
 import RefreshButton from '../../shared/ui/RefreshButton';
 import { getErrorMessage } from '../../shared/utils/getErrorMessage';
 
@@ -28,6 +30,7 @@ export default function HomePage() {
   const offset = (currentPage - 1) * MAX_LIMIT;
   const selectedItemsCount = useSelectedItemsCount();
   const isSearching = inputValue.trim() !== '';
+  const [isModalClose, setIsModalClose] = useState(false);
 
   const {
     data: listData,
@@ -93,6 +96,10 @@ export default function HomePage() {
         onChange={handleInputChange}
         value={inputValue}
       />
+      <button onClick={() => setIsModalClose(true)}>Open Form</button>
+      <Modal title="Modal" onClose={() => setIsModalClose(false)} isOpen={isModalClose}>
+        <h1>Modal</h1>
+      </Modal>
       <div className="flex gap-4 items-start">
         <div className={detailsId ? 'w-1/2 md:flex-1' : 'w-full'}>
           {errorMessage ? (
