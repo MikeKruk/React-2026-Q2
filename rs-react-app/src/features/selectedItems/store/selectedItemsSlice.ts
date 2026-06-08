@@ -1,11 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Pokemon } from '../../entities/pokemon/types/types';
+import type { Pokemon } from '../../../entities/pokemon/types/types';
 
-interface SelectedItemsInterface {
+interface SelectedItems {
   selectedItems: Pokemon[];
 }
 
-const initialState: SelectedItemsInterface = {
+const initialState: SelectedItems = {
   selectedItems: [],
 };
 

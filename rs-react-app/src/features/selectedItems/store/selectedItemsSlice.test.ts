@@ -1,4 +1,4 @@
-import { mockPokemon } from '../../test-utils/mocks/mockPokemon';
+import { mockPokemon } from '../../../test-utils/mocks/mockPokemon';
 import reducer, {
   selectItem,
   unselectAllItems,

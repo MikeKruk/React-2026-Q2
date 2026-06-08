@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
 import { useSelectedItemsCount } from '../hooks/useSelectedItemsCount';
 import { downloadCSV } from '../lib/downloadCSV';
-import { unselectAllItems } from '../selectedItemsSlice';
+import { unselectAllItems } from '../store/selectedItemsSlice';
 
 export default function SelectedItemsFlyout() {
   const dispatch = useAppDispatch();

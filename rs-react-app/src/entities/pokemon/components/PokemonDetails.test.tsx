@@ -11,7 +11,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '../../../app/context/ThemeContext';
-import SelectedItemsReducer from '../../../features/selectedItems/selectedItemsSlice';
+import SelectedItemsReducer from '../../../features/selectedItems/store/selectedItemsSlice';
 import { mockPokemon } from '../../../test-utils/mocks/mockPokemon';
 import { useGetPokemonQuery } from '../api/pokemonApi';
 import PokemonDetails from './PokemonDetails';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
 import type { Pokemon } from '../../../entities/pokemon/types/types';
-import { selectItem, unselectItem } from '../selectedItemsSlice';
+import { selectItem, unselectItem } from '../store/selectedItemsSlice';
 
 export function useSelectedItems(pokemon: Pokemon) {
   const dispatch = useAppDispatch();

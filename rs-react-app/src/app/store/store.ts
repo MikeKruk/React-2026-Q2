@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { pokemonApi } from '../../entities/pokemon/api/pokemonApi';
-import SelectedItemsReducer from '../../features/selectedItems/selectedItemsSlice';
+import FormsReducer from '../../features/forms/store/formsSlice';
+import SelectedItemsReducer from '../../features/selectedItems/store/selectedItemsSlice';
 
 export const store = configureStore({
   reducer: {
     selectedItems: SelectedItemsReducer,
+    forms: FormsReducer,
     [pokemonApi.reducerPath]: pokemonApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

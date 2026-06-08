@@ -17,7 +17,7 @@ import {
   useGetPokemonListQuery,
   useGetPokemonQuery,
 } from '../../entities/pokemon/api/pokemonApi';
-import SelectedItemsReducer from '../../features/selectedItems/selectedItemsSlice';
+import SelectedItemsReducer from '../../features/selectedItems/store/selectedItemsSlice';
 import { LOCAL_STORAGE_KEY } from '../../shared/constants/constants';
 import { mockLocalStorage } from '../../test-utils/mocks/mockLocalStorage';
 import { mockPokemon } from '../../test-utils/mocks/mockPokemon';
