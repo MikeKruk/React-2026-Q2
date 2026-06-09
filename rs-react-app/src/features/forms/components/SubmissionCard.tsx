@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTheme } from '../../../app/context/hooks/useTheme';
-import { useAppDispatch } from '../../../app/store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
 import { clearNew, type FormSubmission } from '../store/formsSlice';
 
 export default function SubmissionCard({
@@ -9,6 +9,7 @@ export default function SubmissionCard({
   submission: FormSubmission;
 }) {
   const dispatch = useAppDispatch();
+  const submissions = useAppSelector((state) => state.forms.submissions);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -21,6 +22,8 @@ export default function SubmissionCard({
 
     return () => clearTimeout(timer);
   }, [submission.isNew, submission.id, dispatch]);
+
+  if(submissions.length === 0) return null
 
   const formattedDate = new Date(submission.createdAt).toLocaleString();
 
@@ -51,3 +54,6 @@ export default function SubmissionCard({
     </div>
   );
 }
+
+
+

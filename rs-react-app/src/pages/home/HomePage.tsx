@@ -2,14 +2,14 @@ import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
 import { Loader } from 'lucide-react';
 import { useState } from 'react';
 import { Route as indexRoute } from '../../app/routes/index';
-import { useAppDispatch } from '../../app/store/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
 import {
   pokemonApi,
   useGetPokemonListQuery,
   useGetPokemonQuery,
 } from '../../entities/pokemon/api/pokemonApi';
+import ReactHooksForm from '../../features/forms/components/ReactHooksForm';
 import SubmissionCard from '../../features/forms/components/SubmissionCard';
-import type { FormSubmission } from '../../features/forms/store/formsSlice';
 import CardList from '../../features/search/components/CardList';
 import Pagination from '../../features/search/components/Pagination';
 import SearchErrorState from '../../features/search/components/SearchErrorState';
@@ -20,8 +20,10 @@ import { LOCAL_STORAGE_KEY, MAX_LIMIT } from '../../shared/constants/constants';
 import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
 import ErrorTestButton from '../../shared/ui/ErrorTestButton';
 import Modal from '../../shared/ui/Modal';
+import OpenFormButton from '../../shared/ui/OpenFormButton';
 import RefreshButton from '../../shared/ui/RefreshButton';
 import { getErrorMessage } from '../../shared/utils/getErrorMessage';
+import UncontrolledForm from '../../features/forms/components/UncontrolledForm';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -32,8 +34,9 @@ export default function HomePage() {
   const offset = (currentPage - 1) * MAX_LIMIT;
   const selectedItemsCount = useSelectedItemsCount();
   const isSearching = inputValue.trim() !== '';
-  const [isModalClose, setIsModalClose] = useState(false);
-  // const submissions = useAppSelector((state) => state.forms.submissions);
+  const [isRHFOpen, setIsRHFOpen] = useState(false);
+  const [isUncontrolledFormOpen, setIsUncontrolledFormOpen] = useState(false);
+  const submissions = useAppSelector((state) => state.forms.submissions);
 
   const {
     data: listData,
@@ -99,14 +102,33 @@ export default function HomePage() {
         onChange={handleInputChange}
         value={inputValue}
       />
-      <button onClick={() => setIsModalClose(true)}>Open Form</button>
+      <div className="flex justify-center gap-4">
+        <OpenFormButton
+          onOpen={() => setIsRHFOpen(true)}
+          title="React Hook Form"
+        />
+        <OpenFormButton
+          onOpen={() => setIsUncontrolledFormOpen(true)}
+          title="Uncontrolled Form"
+        />
+      </div>
+
       <Modal
-        title="Modal"
-        onClose={() => setIsModalClose(false)}
-        isOpen={isModalClose}
+        title="React Hook Form"
+        onClose={() => setIsRHFOpen(false)}
+        isOpen={isRHFOpen}
       >
-        <h1>Modal</h1>
+        <ReactHooksForm onClose={() => setIsRHFOpen(false)} />
       </Modal>
+
+      <Modal
+        title="Uncontrolled Form"
+        onClose={() => setIsUncontrolledFormOpen(false)}
+        isOpen={isUncontrolledFormOpen}
+      >
+        <UncontrolledForm onClose={() => setIsUncontrolledFormOpen(false)} />
+      </Modal>
+
       <div className="flex gap-4 items-start">
         <div className={detailsId ? 'w-1/2 md:flex-1' : 'w-full'}>
           {errorMessage ? (
@@ -141,9 +163,9 @@ export default function HomePage() {
         <RefreshButton onClick={handelRefresh} isText={true} />
         <ErrorTestButton />
       </div>
-      {test.length > 0 && (
+      {submissions.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {test.map((submission) => (
+          {submissions.map((submission) => (
             <SubmissionCard key={submission.id} submission={submission} />
           ))}
         </div>
@@ -151,36 +173,3 @@ export default function HomePage() {
     </main>
   );
 }
-
-const test: FormSubmission[] = [
-  {
-    id: '1',
-    formType: 'uncontrolled',
-    createdAt: 1710000000000,
-    values: {
-      name: 'Alex Johnson',
-      email: 'alex@example.com',
-      age: '28',
-    },
-    isNew: true,
-  },
-  {
-    id: '2',
-    formType: 'react-hook-form',
-    createdAt: 1710001000000,
-    values: {
-      name: 'Maria Ivanova',
-      country: 'Poland',
-    },
-  },
-  {
-    id: '3',
-    formType: 'react-hook-form',
-    createdAt: 1710002000000,
-    values: {
-      title: 'Pokemon Search',
-      query: 'pikachu',
-      resultsCount: '12',
-    },
-  },
-];
