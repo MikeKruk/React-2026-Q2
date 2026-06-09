@@ -1,9 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
+import { useTheme } from '../../../app/context/hooks/useTheme';
 import { useAppDispatch } from '../../../app/store/hooks';
+import { toBase64 } from '../../../shared/utils/toBase64';
 import { formSchema, type FormValues } from '../schema/formSchema';
 import { addSubmission } from '../store/formsSlice';
-import { useTheme } from '../../../app/context/hooks/useTheme';
+import CountryAutocomplete from './CountryAutocomplete';
+import PasswordStrength from './PasswordStrength';
 
 interface ReactHooksFormProps {
   onClose: () => void;
@@ -20,12 +23,18 @@ export default function ReactHooksForm({ onClose }: ReactHooksFormProps) {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    control,
+    setValue,
   } = useForm<FormValues>({
     resolver: yupResolver(formSchema),
     mode: 'onChange',
   });
 
-  const onSubmit = (data: FormValues) => {
+  const password = useWatch({ control, name: 'password' });
+  const country = useWatch({ control, name: 'country' }) ?? '';
+
+  const onSubmit = async (data: FormValues) => {
+    const base64 = await toBase64(data.image);
     dispatch(
       addSubmission({
         id: crypto.randomUUID(),
@@ -35,6 +44,8 @@ export default function ReactHooksForm({ onClose }: ReactHooksFormProps) {
           age: String(data.age),
           email: data.email,
           gender: data.gender,
+          country: data.country,
+          image: base64,
         },
         createdAt: Date.now(),
       })
@@ -42,7 +53,7 @@ export default function ReactHooksForm({ onClose }: ReactHooksFormProps) {
     onClose();
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
       <div className="flex flex-col gap-1">
         <label htmlFor="rhf-name" className="text-sm font-medium">
           Name
@@ -84,6 +95,37 @@ export default function ReactHooksForm({ onClose }: ReactHooksFormProps) {
         )}
       </div>
       <div className="flex flex-col gap-1">
+        <label htmlFor="rhf-password" className="text-sm font-medium">
+          Password
+        </label>
+        <input
+          id="rhf-password"
+          type="password"
+          {...register('password')}
+          className="p-2 rounded-md border border-border bg-background"
+        />
+        {password && <PasswordStrength password={password} />}
+        {errors.password && (
+          <p className="text-red-500 text-xs">{errors.password.message}</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="rhf-confirm" className="text-sm font-medium">
+          Confirm Password
+        </label>
+        <input
+          id="rhf-confirm"
+          type="password"
+          {...register('confirmPassword')}
+          className="p-2 rounded-md border border-border bg-background"
+        />
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-xs">
+            {errors.confirmPassword.message}
+          </p>
+        )}
+      </div>
+      <div className="flex flex-col gap-1">
         <label htmlFor="rhf-gender" className="text-sm font-medium">
           Gender
         </label>
@@ -98,6 +140,29 @@ export default function ReactHooksForm({ onClose }: ReactHooksFormProps) {
         </select>
         {errors.gender && (
           <p className="text-red-500 text-xs">{errors.gender.message}</p>
+        )}
+      </div>
+      <CountryAutocomplete
+        value={country}
+        onChange={(val) => setValue('country', val, { shouldValidate: true })}
+        error={errors.country?.message}
+      />
+      <div className="flex flex-col gap-1">
+        <label htmlFor="rhf-image" className="text-sm font-medium">
+          Profile Image
+        </label>
+        <input
+          id="rhf-image"
+          type="file"
+          accept="image/png,image/jpeg"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) setValue('image', file, { shouldValidate: true });
+          }}
+          className="p-2 rounded-md border border-border bg-background"
+        />
+        {errors.image && (
+          <p className="text-red-500 text-xs">{errors.image.message}</p>
         )}
       </div>
       <div className="flex items-center gap-2">

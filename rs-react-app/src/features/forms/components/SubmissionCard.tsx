@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTheme } from '../../../app/context/hooks/useTheme';
-import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
+import { useAppDispatch } from '../../../app/store/hooks';
 import { clearNew, type FormSubmission } from '../store/formsSlice';
 
 export default function SubmissionCard({
@@ -9,7 +9,6 @@ export default function SubmissionCard({
   submission: FormSubmission;
 }) {
   const dispatch = useAppDispatch();
-  const submissions = useAppSelector((state) => state.forms.submissions);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -23,9 +22,8 @@ export default function SubmissionCard({
     return () => clearTimeout(timer);
   }, [submission.isNew, submission.id, dispatch]);
 
-  if(submissions.length === 0) return null
-
   const formattedDate = new Date(submission.createdAt).toLocaleString();
+  const { image, ...otherValues } = submission.values;
 
   return (
     <div
@@ -40,13 +38,20 @@ export default function SubmissionCard({
       }
     `}
     >
-      <div className="flex justify-between items-center">
-        <span className="capitalize">{submission.formType}</span>
-        <span>{formattedDate}</span>
-      </div>
-      <div>
-        {Object.entries(submission.values).map(([key, value]) => (
-          <p key={key} className="text-sm text-center">
+      {image && (
+        <img
+          src={image}
+          alt={otherValues.name}
+          className="w-16 h-16 rounded-full object-cover shrink-0"
+        />
+      )}
+      <div className="flex flex-col gap-1">
+        <div className="flex justify-between items-center text-xs text-gray-400">
+          <span className="capitalize">{submission.formType}</span>
+          <span>{formattedDate}</span>
+        </div>
+        {Object.entries(otherValues).map(([key, value]) => (
+          <p key={key} className="text-sm">
             <span className="font-medium capitalize">{key}:</span> {value}
           </p>
         ))}
@@ -54,6 +59,3 @@ export default function SubmissionCard({
     </div>
   );
 }
-
-
-

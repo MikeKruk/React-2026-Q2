@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { COUNTRIES } from '../../../shared/constants/constants';
 export const formSchema = yup.object({
   name: yup
     .string()
@@ -28,6 +29,32 @@ export const formSchema = yup.object({
     .boolean()
     .required()
     .oneOf([true], 'You must accept Terms and Conditions'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+  confirmPassword: yup
+    .string()
+    .required('Please confirm password')
+    .oneOf([yup.ref('password')], 'Passwords must match'),
+
+  country: yup
+    .string()
+    .required('Country is required')
+    .test('country', 'Country must be valid', (val) =>
+      COUNTRIES.includes(val ?? '')
+    ),
+  image: yup
+    .mixed<File>()
+    .required('Image is required')
+    .test('fileType', 'Only PNG and JPEG allowed', (val) =>
+      val instanceof File
+        ? ['image/png', 'image/jpeg'].includes(val.type)
+        : false
+    )
+    .test('fileSize', 'Image must be less than 2MB', (val) =>
+      val instanceof File ? val.size <= 2 * 1024 * 1024 : false
+    ),
 });
 
 export type FormValues = yup.InferType<typeof formSchema>;
