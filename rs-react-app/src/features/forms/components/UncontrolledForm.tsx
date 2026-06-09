@@ -78,7 +78,7 @@ export default function UncontrolledForm({ onClose }: UncontrolledFormProps) {
     }
   };
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
       <div className="flex flex-col gap-1">
         <label htmlFor="uc-name" className="text-sm font-medium">
           Name
