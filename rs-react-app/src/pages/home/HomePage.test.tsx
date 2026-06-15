@@ -17,7 +17,9 @@ import {
   useGetPokemonListQuery,
   useGetPokemonQuery,
 } from '../../entities/pokemon/api/pokemonApi';
+import FormsReducer from '../../features/forms/store/formsSlice';
 import SelectedItemsReducer from '../../features/selectedItems/store/selectedItemsSlice';
+import CountriesReducer from '../../features/forms/store/countriesSlice';
 import { LOCAL_STORAGE_KEY } from '../../shared/constants/constants';
 import { mockLocalStorage } from '../../test-utils/mocks/mockLocalStorage';
 import { mockPokemon } from '../../test-utils/mocks/mockPokemon';
@@ -42,11 +44,13 @@ function renderApp() {
   const testStore = configureStore({
     reducer: {
       selectedItems: SelectedItemsReducer,
+      forms: FormsReducer,
+      countries: CountriesReducer,
       [pokemonApi.reducerPath]: pokemonApi.reducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
   });
-  
+
   const rootRoute = createRootRoute({
     component: () => (
       <Provider store={testStore}>

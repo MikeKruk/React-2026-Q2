@@ -101,7 +101,6 @@ export default function Modal({
       onClick={handleClickOverlay}
     >
       <div
-        tabIndex={-1}
         className="
           relative w-full max-w-md mx-4
           bg-background border border-border
