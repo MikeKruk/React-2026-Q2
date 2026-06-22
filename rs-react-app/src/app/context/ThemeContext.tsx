@@ -1,3 +1,4 @@
+'use client';
 import { createContext, useEffect, useState } from 'react';
 
 type Theme = 'dark' | 'light';
@@ -9,9 +10,10 @@ type ThemeContextProps = {
 const ThemeContext = createContext<ThemeContextProps | null>(null);
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() =>
-    localStorage.getItem('theme') === 'light' ? 'light' : 'dark'
-  );
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'dark';
+    return localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
