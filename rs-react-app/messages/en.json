@@ -1,0 +1,16 @@
+{
+  "about": {
+    "title": "About",
+    "author": "Author",
+    "githubLink": "GitHub Profile",
+    "courseLink": "RS School React course"
+  },
+  "header": {
+    "home": "Home",
+    "about": "About"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "backLink": "Back to home"
+  }
+}

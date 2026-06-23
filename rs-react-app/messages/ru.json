@@ -1,0 +1,16 @@
+{
+  "about": {
+    "title": "О приложении",
+    "author": "Автор",
+    "githubLink": "Профиль GitHub",
+    "courseLink": "Курс RS School React"
+  },
+  "header": {
+    "home": "Главная",
+    "about": "О приложении"
+  },
+  "notFound": {
+    "title": "Страница не найдена",
+    "backLink": "Вернуться на главную"
+  }
+}
