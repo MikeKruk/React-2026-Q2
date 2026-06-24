@@ -1,17 +1,29 @@
-import { useNavigate } from '@tanstack/react-router';
+'use client';
+import { useRouter } from '@/i18n/navigation';
 import { Loader, X } from 'lucide-react';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
 import { useTheme } from '../../../app/context/hooks/useTheme';
-import { Route as detailsRoute } from '../../../app/routes/detail';
 import { useAppDispatch } from '../../../app/store/hooks';
 import RefreshButton from '../../../shared/ui/RefreshButton';
 import { getErrorMessage } from '../../../shared/utils/getErrorMessage';
 import { pokemonApi, useGetPokemonQuery } from '../api/pokemonApi';
+import { Pokemon } from '../types/types';
 
-export default function PokemonDetails() {
+interface PokemonDetailsProps {
+  initialDetails?: Pokemon;
+}
+
+export default function PokemonDetails({
+  initialDetails,
+}: PokemonDetailsProps) {
   const dispatch = useAppDispatch();
-  const { page, detailsId } = detailsRoute.useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const router = useRouter();
+  const page = params.page;
+  const detailsId = params.detailsId as string;
   const { data: pokemon, isLoading, error } = useGetPokemonQuery(detailsId);
+  const hybridPokemon = pokemon ?? initialDetails;
   const errorMessage = getErrorMessage(error);
 
   const { theme } = useTheme();
@@ -32,13 +44,10 @@ export default function PokemonDetails() {
     return <div>{errorMessage}</div>;
   }
 
-  if (!pokemon) return null;
+  if (!hybridPokemon) return null;
 
   const handleClose = () => {
-    navigate({
-      to: '/$page',
-      params: { page },
-    });
+    router.push(`/${page}`);
   };
 
   const handelRefresh = () => {
@@ -62,16 +71,18 @@ export default function PokemonDetails() {
           <X className="w-4 h-4 md:w-6 md:h-6" />
         </button>
       </div>
-      <img
-        src={pokemon.sprites.other['official-artwork'].front_default}
-        alt={pokemon.name}
+      <Image
+        src={hybridPokemon.sprites.other['official-artwork'].front_default}
+        width={160}
+        height={160}
+        alt={hybridPokemon.name}
         className="w-30 h-30 md:w-40 md:h-40 mx-auto"
       />
       <h2 className="font-bold capitalize text-center text-xl">
-        {pokemon.name}
+        {hybridPokemon.name}
       </h2>
       <div className="flex gap-2 justify-center">
-        {pokemon.types.map((type) => (
+        {hybridPokemon.types.map((type) => (
           <span
             key={type.slot}
             className="px-2 py-1 rounded-md border border-gray-500 capitalize text-sm"
@@ -81,9 +92,9 @@ export default function PokemonDetails() {
         ))}
       </div>
       <div className="flex flex-col gap-2 text-sm">
-        <p>Height: {pokemon.height}</p>
-        <p>Weight: {pokemon.weight / 10}kg</p>
-        <p>Base experience: {pokemon.base_experience}</p>
+        <p>Height: {hybridPokemon.height}</p>
+        <p>Weight: {hybridPokemon.weight / 10}kg</p>
+        <p>Base experience: {hybridPokemon.base_experience}</p>
       </div>
     </div>
   );

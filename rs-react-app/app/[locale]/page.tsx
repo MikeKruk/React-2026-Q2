@@ -1,3 +1,5 @@
-export default function HomePage() {
-  return <h1 className="text-red-500 text-sm">Home</h1>;
+import { redirect } from '@/i18n/navigation';
+
+export default function LocaleRootPage() {
+  redirect({ href: '/1', locale: 'en' });
 }

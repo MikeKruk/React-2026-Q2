@@ -1,6 +1,8 @@
-import { Outlet, useNavigate, useParams } from '@tanstack/react-router';
+'use client';
+import PokemonDetails from '@/entities/pokemon/components/PokemonDetails';
+import { Pokemon } from '@/entities/pokemon/types/types';
+import { useRouter } from '@/i18n/navigation';
 import { Loader } from 'lucide-react';
-import { Route as indexRoute } from '../../app/routes/index';
 import { useAppDispatch } from '../../app/store/hooks';
 import {
   pokemonApi,
@@ -19,12 +21,22 @@ import ErrorTestButton from '../../shared/ui/ErrorTestButton';
 import RefreshButton from '../../shared/ui/RefreshButton';
 import { getErrorMessage } from '../../shared/utils/getErrorMessage';
 
-export default function HomePage() {
+interface HomeScreenProps {
+  page: number;
+  detailsId?: string;
+  initialData?: { results: Pokemon[]; count: number };
+  initialDetails?: Pokemon;
+}
+
+export default function HomeScreen({
+  page: currentPage,
+  detailsId,
+  initialData,
+  initialDetails,
+}: HomeScreenProps) {
   const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useLocalStorage(LOCAL_STORAGE_KEY, '');
-  const { page: currentPage } = indexRoute.useParams();
-  const { detailsId } = useParams({ strict: false });
-  const navigate = useNavigate();
+  const router = useRouter();
   const offset = (currentPage - 1) * MAX_LIMIT;
   const selectedItemsCount = useSelectedItemsCount();
   const isSearching = inputValue.trim() !== '';
@@ -43,30 +55,26 @@ export default function HomePage() {
     error: searchError,
   } = useGetPokemonQuery(inputValue.trim(), { skip: !isSearching });
 
+  const hybridListData = listData ?? initialData;
+
   const pokemons = isSearching
     ? searchedPokemon
       ? [searchedPokemon]
       : []
-    : (listData?.results ?? []);
+    : (hybridListData?.results ?? []);
   const totalPages = isSearching
     ? 0
-    : Math.ceil((listData?.count ?? 0) / MAX_LIMIT);
+    : Math.ceil((hybridListData?.count ?? 0) / MAX_LIMIT);
   const isLoading = isLoadingList || isSearchLoading;
 
   const errorMessage = getErrorMessage(listError || searchError);
 
   const handleSearch = async () => {
-    navigate({
-      to: '/$page',
-      params: { page: 1 },
-    });
+    router.push('/1');
   };
 
   const handlePageChange = (newPage: number) => {
-    navigate({
-      to: '/$page',
-      params: { page: newPage },
-    });
+    router.push(`/${newPage}`);
   };
 
   const handleInputChange = (value: string) => {
@@ -74,10 +82,7 @@ export default function HomePage() {
   };
 
   const handelCardClick = (id: number) => {
-    navigate({
-      to: '/$page/$detailsId',
-      params: { page: currentPage, detailsId: id },
-    });
+    router.push(`/${currentPage}/${id}`);
   };
 
   const handelRefresh = () => {
@@ -111,7 +116,7 @@ export default function HomePage() {
         </div>
         {detailsId && (
           <div className="w-1/2 md:w-1/3 sticky top-4">
-            <Outlet />
+            <PokemonDetails initialDetails={initialDetails} />
           </div>
         )}
       </div>

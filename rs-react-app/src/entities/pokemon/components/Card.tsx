@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useSelectedItems } from '../../../features/selectedItems/hooks/useSelectedItems';
 import type { Pokemon } from '../types/types';
 
@@ -16,8 +17,10 @@ export default function Card({ pokemon, onClick }: CardProps) {
       <div className="w-full flex justify-end">
         <input onClick={handleClick} onChange={() => {}} checked={isSelected} type="checkbox" />
       </div>
-      <img
+      <Image
         src={pokemon.sprites.other['official-artwork'].front_default}
+        width={160}
+        height={160}
         alt={pokemon.name}
         className="w-30 h-30 md:w-40 md:h-40"
       />

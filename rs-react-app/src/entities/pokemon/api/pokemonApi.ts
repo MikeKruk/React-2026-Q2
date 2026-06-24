@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BASE_URL_API, CACHE_TTL } from '../../../shared/constants/constants';
-import type { Pokemon, PokemonListItem } from '../types/types';
+import type { Pokemon } from '../types/types';
+import { fetchPokemonList } from './fetchPokemonList';
 
 export const pokemonApi = createApi({
   reducerPath: 'pokemonApi',
@@ -14,23 +15,8 @@ export const pokemonApi = createApi({
     >({
       queryFn: async ({ limit, offset }) => {
         try {
-          const response = await fetch(
-            `${BASE_URL_API}pokemon?limit=${limit}&offset=${offset}`
-          );
-          if (!response.ok) throw new Error('Failed to get pokemon list');
-          const {
-            results,
-            count,
-          }: { results: PokemonListItem[]; count: number } =
-            await response.json();
-          const pokemons = await Promise.all(
-            results.map((pokemon) =>
-              fetch(`${BASE_URL_API}pokemon/${pokemon.name}`).then((res) =>
-                res.json()
-              )
-            )
-          );
-          return { data: { results: pokemons, count } };
+          const data = await fetchPokemonList(limit, offset);
+          return { data };
         } catch {
           return {
             error: {
