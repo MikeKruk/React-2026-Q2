@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from '../../../app/context/hooks/useTheme';
 import PaginationButton from '../../../shared/ui/PaginationButton';
 import { getPaginationRage } from '../../../shared/utils/getPaginationRage';
@@ -14,6 +15,7 @@ export default function Pagination({
   totalPages,
   onPageChange,
 }: PaginationProps) {
+  const t = useTranslations('home');
   const pages = getPaginationRage(currentPage, totalPages);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -27,7 +29,7 @@ export default function Pagination({
   return (
     <div className="flex gap-2 items-center justify-center">
       <PaginationButton
-        title="Prev"
+        title={t('prev')}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={() => onPageChange(currentPage - 1)}
@@ -62,7 +64,7 @@ export default function Pagination({
         )
       )}
       <PaginationButton
-        title="Next"
+        title={t('next')}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={() => onPageChange(currentPage + 1)}

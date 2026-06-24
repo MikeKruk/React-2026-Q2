@@ -3,7 +3,7 @@ import Footer from '@/widgets/Footer';
 import Header from '@/widgets/Header';
 import type { Metadata } from 'next';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '../../src/app/index.css';
 import Providers from '../providers';
@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   description: 'A simple Pokemon app built with Next.js and React',
 };
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 interface RootLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -34,15 +38,18 @@ export default async function RootLayout({
   params,
 }: RootLayoutProps) {
   const { locale } = await params;
-  const message = await getMessages();
 
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  setRequestLocale(locale);
+  const message = await getMessages();
+
   return (
     <html lang={locale} suppressHydrationWarning data-theme="dark">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <NextIntlClientProvider messages={message}>
+        <NextIntlClientProvider locale={locale} messages={message}>
           <Providers>
             <div className="flex flex-col min-h-screen px-4 py-2">
               <Header />

@@ -1,6 +1,7 @@
 'use client';
 import { useRouter } from '@/i18n/navigation';
 import { Loader, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useTheme } from '../../../app/context/hooks/useTheme';
@@ -17,6 +18,7 @@ interface PokemonDetailsProps {
 export default function PokemonDetails({
   initialDetails,
 }: PokemonDetailsProps) {
+  const t = useTranslations('home');
   const dispatch = useAppDispatch();
   const params = useParams();
   const router = useRouter();
@@ -40,8 +42,10 @@ export default function PokemonDetails({
     );
   }
 
+   new Promise((_, rej) => setTimeout(rej, 1000));
+
   if (error) {
-    return <div>{errorMessage}</div>;
+    return <div>{t(`error.${errorMessage}`)}</div>;
   }
 
   if (!hybridPokemon) return null;
@@ -92,9 +96,15 @@ export default function PokemonDetails({
         ))}
       </div>
       <div className="flex flex-col gap-2 text-sm">
-        <p>Height: {hybridPokemon.height}</p>
-        <p>Weight: {hybridPokemon.weight / 10}kg</p>
-        <p>Base experience: {hybridPokemon.base_experience}</p>
+        <p>
+          {t('height')}: {hybridPokemon.height}
+        </p>
+        <p>
+          {t('weight')}: {hybridPokemon.weight / 10}kg
+        </p>
+        <p>
+          {t('baseExperience')}: {hybridPokemon.base_experience}
+        </p>
       </div>
     </div>
   );

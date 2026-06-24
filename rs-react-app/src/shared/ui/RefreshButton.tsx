@@ -1,4 +1,5 @@
 import { RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from '../../app/context/hooks/useTheme';
 
 interface RefreshButtonProps {
@@ -7,6 +8,7 @@ interface RefreshButtonProps {
 }
 
 export default function RefreshButton({ onClick, isText }: RefreshButtonProps) {
+  const t = useTranslations('home');
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -22,7 +24,7 @@ export default function RefreshButton({ onClick, isText }: RefreshButtonProps) {
       onClick={onClick}
     >
       <RefreshCw size={16} />
-      {isText && <span className="hidden md:inline">Refresh</span>}
+      {isText && <span className="hidden md:inline">{t('refresh')}</span>}
     </button>
   );
 }

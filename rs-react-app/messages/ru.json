@@ -12,5 +12,24 @@
   "notFound": {
     "title": "Страница не найдена",
     "backLink": "Вернуться на главную"
+  },
+    "home": {
+    "search": "Поиск",
+    "prev": "Предыдущая",
+    "next": "Следующая",
+    "refresh": "Обновить",
+    "throwError": "Бросить ошибку",
+    "height": "Высота",
+    "weight": "Вес",
+    "baseExperience": "Опыт"
+  },
+  "footer": {
+    "allRightsReserved": "Все права защищены",
+    "createdBy": "Создано"
+  },
+  "error": {
+    "failedToLoadList": "Не удалось загрузить список покемонов",
+    "failedToLoadPokemon": "Не удалось загрузить покемона",
+    "somethingWentWrong": "Что-то пошло не так"
   }
 }

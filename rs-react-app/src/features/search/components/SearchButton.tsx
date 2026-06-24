@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useTheme } from '../../../app/context/hooks/useTheme';
 
 interface SearchButtonProps {
@@ -5,6 +6,7 @@ interface SearchButtonProps {
 }
 
 export default function SearchButton({ onClick }: SearchButtonProps) {
+  const t = useTranslations('home');
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const hoverClass = isDark
@@ -19,7 +21,7 @@ export default function SearchButton({ onClick }: SearchButtonProps) {
         ${hoverClass}
       `}
     >
-      Search
+      {t('search')}
     </button>
   );
 }

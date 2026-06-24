@@ -1,6 +1,8 @@
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 export default function ErrorTestButton() {
+  const t = useTranslations('home');
   const [crash, setCrash] = useState(false);
 
   if (crash) throw new Error('Test error');
@@ -15,7 +17,7 @@ export default function ErrorTestButton() {
     border border-gray-500"
       onClick={handelClick}
     >
-      Throw error
+      {t('throwError')}
     </button>
   );
 }

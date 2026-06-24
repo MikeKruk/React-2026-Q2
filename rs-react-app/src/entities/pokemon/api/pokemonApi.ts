@@ -21,7 +21,7 @@ export const pokemonApi = createApi({
           return {
             error: {
               status: 500,
-              data: 'Failed to get pokemon list',
+              data: 'failedToLoadList',
             },
           };
         }
@@ -31,7 +31,7 @@ export const pokemonApi = createApi({
     getPokemon: builder.query<Pokemon, string | number>({
       query: (param) => `/pokemon/${param}`,
       transformErrorResponse: (_, __, arg) => {
-        return { status: 500, data: `Failed to get pokemon ${arg}` };
+        return { status: 500, data: 'failedToLoadPokemon' };
       },
       providesTags: (_, __, arg) => [{ type: 'Pokemon', id: arg }],
     }),

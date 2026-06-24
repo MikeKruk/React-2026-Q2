@@ -1,6 +1,12 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-export default async function AboutPage() {
+interface AboutPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AboutPage({ params }: AboutPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('about');
   return (
     <div className="flex flex-1 flex-col my-4 gap-8 max-w-2xl mx-auto items-center text-center">

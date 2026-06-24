@@ -3,6 +3,7 @@ import PokemonDetails from '@/entities/pokemon/components/PokemonDetails';
 import { Pokemon } from '@/entities/pokemon/types/types';
 import { useRouter } from '@/i18n/navigation';
 import { Loader } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useAppDispatch } from '../../app/store/hooks';
 import {
   pokemonApi,
@@ -34,6 +35,7 @@ export default function HomeScreen({
   initialData,
   initialDetails,
 }: HomeScreenProps) {
+  const t = useTranslations('home');
   const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useLocalStorage(LOCAL_STORAGE_KEY, '');
   const router = useRouter();
@@ -101,7 +103,10 @@ export default function HomeScreen({
       <div className="flex gap-4 items-start">
         <div className={detailsId ? 'w-1/2 md:flex-1' : 'w-full'}>
           {errorMessage ? (
-            <SearchErrorState message={errorMessage} onRetry={handleSearch} />
+            <SearchErrorState
+              message={t(`error.${errorMessage}`)}
+              onRetry={handleSearch}
+            />
           ) : isLoading ? (
             <div className="flex-1 flex justify-center items-center">
               <Loader className="animate-spin" aria-label="Loading" />

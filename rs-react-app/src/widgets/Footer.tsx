@@ -1,13 +1,18 @@
-export default function Footer() {
+import { getTranslations } from 'next-intl/server';
+
+export default async function Footer() {
   const year = new Date().getFullYear();
+  const t = await getTranslations('footer');
   return (
     <footer>
       <div className="flex flex-row justify-between">
         <div>
-          <p className="max-sm:text-sm">© {year} All rights reserved</p>
+          <p className="max-sm:text-sm">
+            © {year} {t('allRightsReserved')}
+          </p>
         </div>
         <p>
-          Created by{' '}
+          {t('createdBy')}{' '}
           <a
             href="https://github.com/MikeKruk"
             aria-label="Link to MikeKruk github profile"
