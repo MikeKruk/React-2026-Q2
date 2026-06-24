@@ -42,8 +42,6 @@ export default function PokemonDetails({
     );
   }
 
-   new Promise((_, rej) => setTimeout(rej, 1000));
-
   if (error) {
     return <div>{t(`error.${errorMessage}`)}</div>;
   }
