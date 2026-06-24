@@ -16,8 +16,8 @@ export default function SelectedItemsFlyout() {
     dispatch(unselectAllItems());
   };
 
-  const handleDownload = () => {
-    downloadCSV(selectedPokemons);
+  const handleDownload = async () => {
+    await downloadCSV(selectedPokemons);
   };
 
   return (
