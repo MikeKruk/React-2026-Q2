@@ -13,7 +13,7 @@
     "title": "Страница не найдена",
     "backLink": "Вернуться на главную"
   },
-    "home": {
+  "home": {
     "search": "Поиск",
     "prev": "Предыдущая",
     "next": "Следующая",
@@ -30,6 +30,7 @@
   "error": {
     "failedToLoadList": "Не удалось загрузить список покемонов",
     "failedToLoadPokemon": "Не удалось загрузить покемона",
-    "somethingWentWrong": "Что-то пошло не так"
+    "somethingWentWrong": "Что-то пошло не так",
+    "retry": "Повторить"
   }
 }

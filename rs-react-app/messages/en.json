@@ -30,6 +30,7 @@
   "error": {
     "failedToLoadList": "Failed to load pokemon list",
     "failedToLoadPokemon": "Failed to load pokemon",
-    "somethingWentWrong": "Something went wrong"
+    "somethingWentWrong": "Something went wrong",
+    "retry": "Retry"
   }
 }

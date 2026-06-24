@@ -3,6 +3,7 @@ import { fetchPokemonList } from '@/entities/pokemon/api/fetchPokemonList';
 import HomeScreen from '@/screens/home/HomeScreen';
 import { MAX_LIMIT } from '@/shared/constants/constants';
 import { notFound } from 'next/navigation';
+import { searchPokemon } from '../actions';
 
 interface HomePageProps {
   params: Promise<{ page: string; locale: string; detailsId: string }>;
@@ -24,6 +25,7 @@ export default async function HomePageWithDetails({ params }: HomePageProps) {
       detailsId={detailsId}
       initialData={initialData}
       initialDetails={initialDetails}
+      searchAction={searchPokemon}
     />
   );
 }
