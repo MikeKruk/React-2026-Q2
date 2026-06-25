@@ -1,9 +1,11 @@
+import { useTranslations } from 'next-intl';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
 import { useSelectedItemsCount } from '../hooks/useSelectedItemsCount';
 import { downloadCSV } from '../lib/downloadCSV';
 import { unselectAllItems } from '../selectedItemsSlice';
 
 export default function SelectedItemsFlyout() {
+  const t = useTranslations('csv');
   const dispatch = useAppDispatch();
   const selectedItemsCount = useSelectedItemsCount();
   const selectedPokemons = useAppSelector(
@@ -33,7 +35,8 @@ export default function SelectedItemsFlyout() {
       "
     >
       <p className="font-medium">
-        Selected Items: <span className="font-bold">{selectedItemsCount}</span>
+        {t('selectedItems')}:{' '}
+        <span className="font-bold">{selectedItemsCount}</span>
       </p>
 
       <div className="flex gap-3">
@@ -41,13 +44,13 @@ export default function SelectedItemsFlyout() {
           onClick={handleClick}
           className="rounded-lg border border-white/20 px-4 py-2 transition hover:bg-white/20 hover:scale-105"
         >
-          Unselect all
+          {t('unselectAll')}
         </button>
         <button
           onClick={handleDownload}
           className="rounded-lg border border-white/20 px-4 py-2 transition hover:bg-white/20 hover:scale-105"
         >
-          Download
+          {t('download')}
         </button>
       </div>
     </div>

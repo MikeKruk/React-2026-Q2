@@ -33,5 +33,10 @@
     "somethingWentWrong": "Something went wrong",
     "retry": "Retry",
     "failedToGetPokemonList": "Failed to get pokemon list"
+  },
+  "csv": {
+    "download": "Download",
+    "unselectAll": "Unselect all",
+    "selectedItems": "Selected Items"
   }
 }

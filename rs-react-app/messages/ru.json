@@ -33,5 +33,10 @@
     "somethingWentWrong": "Что-то пошло не так",
     "retry": "Повторить",
     "failedToGetPokemonList": "Не удалось получить список покемонов"
+  },
+  "csv": {
+    "download": "Скачать",
+    "unselectAll": "Снять все",
+    "selectedItems": "Выбранные элементы"
   }
 }
