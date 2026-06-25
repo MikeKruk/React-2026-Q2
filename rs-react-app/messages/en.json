@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "About",
+    "author": "Author",
+    "githubLink": "GitHub Profile",
+    "courseLink": "RS School React course"
+  },
+  "header": {
+    "home": "Home",
+    "about": "About"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "backLink": "Back to home"
+  },
+  "home": {
+    "search": "Search",
+    "prev": "Prev",
+    "next": "Next",
+    "refresh": "Refresh",
+    "throwError": "Throw error",
+    "height": "Height",
+    "weight": "Weight",
+    "baseExperience": "Base experience"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved",
+    "createdBy": "Created by"
+  },
+  "error": {
+    "failedToLoadList": "Failed to load pokemon list",
+    "failedToLoadPokemon": "Failed to load pokemon",
+    "somethingWentWrong": "Something went wrong",
+    "retry": "Retry",
+    "failedToGetPokemonList": "Failed to get pokemon list"
+  },
+  "csv": {
+    "download": "Download",
+    "unselectAll": "Unselect all",
+    "selectedItems": "Selected Items"
+  }
+}

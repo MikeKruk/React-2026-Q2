@@ -1,18 +1,19 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Loader, X } from 'lucide-react';
+'use client';
+import { useRouter } from '@/i18n/navigation';
+import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { useTheme } from '../../../app/context/hooks/useTheme';
-import { Route as detailsRoute } from '../../../app/routes/detail';
-import { useAppDispatch } from '../../../app/store/hooks';
-import RefreshButton from '../../../shared/ui/RefreshButton';
-import { getErrorMessage } from '../../../shared/utils/getErrorMessage';
-import { pokemonApi, useGetPokemonQuery } from '../api/pokemonApi';
+import { Pokemon } from '../types/types';
 
-export default function PokemonDetails() {
-  const dispatch = useAppDispatch();
-  const { page, detailsId } = detailsRoute.useParams();
-  const navigate = useNavigate();
-  const { data: pokemon, isLoading, error } = useGetPokemonQuery(detailsId);
-  const errorMessage = getErrorMessage(error);
+interface PokemonDetailsProps {
+  pokemon?: Pokemon;
+  page: number;
+}
+
+export default function PokemonDetails({ pokemon, page }: PokemonDetailsProps) {
+  const t = useTranslations('home');
+  const router = useRouter();
 
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -20,37 +21,15 @@ export default function PokemonDetails() {
     ? 'hover:bg-violet-400/20 hover:border-violet-400 active:bg-violet-400/20 active:border-violet-400'
     : 'hover:bg-orange-400/70 hover:border-orange-400 active:bg-orange-400/70 active:border-orange-400';
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center">
-        <Loader className="animate-spin" aria-label="Loading" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div>{errorMessage}</div>;
-  }
-
   if (!pokemon) return null;
 
   const handleClose = () => {
-    navigate({
-      to: '/$page',
-      params: { page },
-    });
-  };
-
-  const handelRefresh = () => {
-    dispatch(
-      pokemonApi.util.invalidateTags([{ type: 'Pokemon', id: detailsId }])
-    );
+    router.push(`/${page}`);
   };
 
   return (
     <div className="border border-gray-500 rounded-md p-4 flex flex-col gap-4">
       <div className="flex justify-between">
-        <RefreshButton onClick={handelRefresh} isText={false} />
         <button
           aria-label="Close details"
           onClick={handleClose}
@@ -62,8 +41,10 @@ export default function PokemonDetails() {
           <X className="w-4 h-4 md:w-6 md:h-6" />
         </button>
       </div>
-      <img
+      <Image
         src={pokemon.sprites.other['official-artwork'].front_default}
+        width={160}
+        height={160}
         alt={pokemon.name}
         className="w-30 h-30 md:w-40 md:h-40 mx-auto"
       />
@@ -81,9 +62,15 @@ export default function PokemonDetails() {
         ))}
       </div>
       <div className="flex flex-col gap-2 text-sm">
-        <p>Height: {pokemon.height}</p>
-        <p>Weight: {pokemon.weight / 10}kg</p>
-        <p>Base experience: {pokemon.base_experience}</p>
+        <p>
+          {t('height')}: {pokemon.height}
+        </p>
+        <p>
+          {t('weight')}: {pokemon.weight / 10}kg
+        </p>
+        <p>
+          {t('baseExperience')}: {pokemon.base_experience}
+        </p>
       </div>
     </div>
   );

@@ -21,6 +21,9 @@ body {
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+  --accent-from: #eab308;
+  --accent-to: #f97316;
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -35,6 +38,9 @@ body {
   --shadow:
     rgba(139, 92, 246, 0.15) 0 10px 15px -3px,
     rgba(109, 40, 217, 0.1) 0 4px 6px -2px;
+
+  --accent-from: #a78bfa;
+  --accent-to: #6366f1;
 }
 
 @theme inline {
@@ -43,6 +49,8 @@ body {
   --color-text-h: var(--text-h);
   --color-card-bg: var(--card-bg);
   --color-border: var(--border);
+  --color-accent-from: var(--accent-from);
+  --color-accent-to: var(--accent-to);
 }
 
 @layer base {
@@ -55,7 +63,9 @@ body {
   body {
     background-color: var(--bg);
     color: var(--text);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   a {

@@ -1,46 +1,49 @@
-import { Link, useMatchRoute } from '@tanstack/react-router';
+'use client';
+import { Link, usePathname } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useTheme } from '../app/context/hooks/useTheme';
+import LanguageSwitcher from './LanguageSwitcher';
 import ToggleThemeButton from './ToggleThemeButton';
 
 export default function Header() {
-  const useMatch = useMatchRoute();
-  const isHome = !!useMatch({
-    to: '/$page',
-    fuzzy: true,
-  });
+  const t = useTranslations('header');
+  const pathName = usePathname();
+  const isHome = pathName === '/' || /^\/\d+/.test(pathName);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const gradientText = isDark
     ? 'bg-linear-to-r from-violet-400 to-indigo-500 bg-clip-text'
     : 'bg-linear-to-r from-yellow-500 to-orange-500 bg-clip-text';
+
+  const activeLink = `${gradientText} font-bold`;
+  const inactiveLink = 'hover:underline';
   return (
-    <header className="flex justify-between items-center">
+    <header className="flex flex-wrap justify-between items-center mt-0.5 gap-y-3">
       <h1
         className={`
-      text-xl font-bold 
-      bg-clip-text text-transparent  
-      ${gradientText} 
+          w-full md:w-auto text-center  
+          text-xl font-bold 
+          bg-clip-text text-transparent  
+          ${gradientText} 
         `}
       >
         Pokémon Explorer
       </h1>
       <nav className="flex gap-4">
-        <Link
-          to="/$page"
-          params={{ page: 1 }}
-          className={`hover:underline ${isHome ? `${gradientText} font-bold` : ''}`}
-        >
-          Home
+        <Link href="/1" className={isHome ? activeLink : inactiveLink}>
+          {t('home')}
         </Link>
         <Link
-          to="/about"
-          className={`hover:underline`}
-          activeProps={{ className: `${gradientText} font-bold` }}
+          href="/about"
+          className={pathName === '/about' ? activeLink : inactiveLink}
         >
-          About
+          {t('about')}
         </Link>
       </nav>
-      <ToggleThemeButton />
+      <div className="flex gap-4 items-center">
+        <LanguageSwitcher />
+        <ToggleThemeButton />
+      </div>
     </header>
   );
 }
