@@ -36,7 +36,6 @@ export default function HomeScreen({
   const handlePageChange = (newPage: number) => {
     router.push(`/${newPage}`);
   };
-
   const handleInputChange = (value: string) => {
     setInputValue(value);
   };

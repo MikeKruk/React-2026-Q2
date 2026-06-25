@@ -31,6 +31,7 @@
     "failedToLoadList": "Failed to load pokemon list",
     "failedToLoadPokemon": "Failed to load pokemon",
     "somethingWentWrong": "Something went wrong",
-    "retry": "Retry"
+    "retry": "Retry",
+    "failedToGetPokemonList": "Failed to get pokemon list"
   }
 }

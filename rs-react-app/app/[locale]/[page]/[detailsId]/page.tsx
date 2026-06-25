@@ -12,7 +12,12 @@ interface HomePageProps {
 export default async function HomePageWithDetails({ params }: HomePageProps) {
   const { page, detailsId } = await params;
 
-  if (Number.isNaN(Number(detailsId)) || Number(detailsId) < 1) notFound();
+  if (
+    Number.isNaN(Number(detailsId)) ||
+    Number(detailsId) < 1 ||
+    Number(detailsId) > 56
+  )
+    notFound();
 
   const offset = (Number(page) - 1) * MAX_LIMIT;
   const [initialData, initialDetails] = await Promise.all([

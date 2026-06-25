@@ -11,7 +11,7 @@ interface HomePageProps {
 export default async function HomePage({ params }: HomePageProps) {
   const { page } = await params;
 
-  if (Number.isNaN(Number(page))) notFound();
+  if (Number.isNaN(Number(page)) || Number(page) < 1 || Number(page) > 56) notFound();
 
   const offset = (Number(page) - 1) * MAX_LIMIT;
   const initialData = await fetchPokemonList(MAX_LIMIT, offset);

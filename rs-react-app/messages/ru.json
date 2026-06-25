@@ -31,6 +31,7 @@
     "failedToLoadList": "Не удалось загрузить список покемонов",
     "failedToLoadPokemon": "Не удалось загрузить покемона",
     "somethingWentWrong": "Что-то пошло не так",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "failedToGetPokemonList": "Не удалось получить список покемонов"
   }
 }
